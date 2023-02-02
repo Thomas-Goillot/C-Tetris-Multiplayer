@@ -377,7 +377,7 @@ int main(int argc, char *argv[])
     while (running)
     {
 
-        // musique
+        // musique test
 
         SDL_AudioSpec wavSpec;
         Uint32 wavLength;
