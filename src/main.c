@@ -356,6 +356,8 @@ void move(int8_t direction)
     x += direction;
 }
 
+// ------------------------------------------------------------------------------
+
 int main(int argc, char *argv[])
 {
     SDL_Window *win;
@@ -497,3 +499,5 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+// josua test
