@@ -1,3 +1,4 @@
+
 /*
 Auteur: Ibrahim OUBIHI / Thomas Goillot / Joshua TANG TONG HI
 Date : rendu du 01/02/2023
@@ -18,8 +19,35 @@ TODO :
 #include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
+#define WINDOW_WIDTH (640)
+#define WINDOW_HEIGHT (480)
+
+const int8_t bi[4][4][2] =
+        {
+                {{-2, 0}, {1, 0}, {-2, -1}, {1, 2}},
+                {{-1, 0}, {2, 0}, {-1, 2}, {2, -1}},
+                {{2, 0}, {-1, 0}, {2, 1}, {-1, -2}},
+                {{1, 0}, {-2, 0}, {1, -2}, {-2, 1}}};
+
+const int8_t br[4][4][2] =
+        {
+                {{-1, 0}, {-1, 1}, {0, -2}, {-1, -2}},
+                {{1, 0}, {1, -1}, {0, 2}, {1, 2}},
+                {{1, 0}, {1, 1}, {0, -2}, {1, -2}},
+                {{-1, 0}, {-1, -1}, {0, 2}, {-1, 2}}};
 
 // initialisation de la taille du tableau en hauteur et largeur, ainsi que la taille de chaque cellules
+const uint8_t ri[4][4] =
+        {
+                {0, 3, 15, 12},
+                {1, 7, 14, 8},
+                {4, 2, 11, 13},
+                {5, 6, 10, 9}};
+
+const uint8_t rr[2][4] =
+        {
+                {0, 2, 10, 8},
+                {1, 6, 9, 4}};
 
 const uint8_t height = 40;
 const uint8_t width = 10;
@@ -38,48 +66,48 @@ enum TETROMINOS
 };
 
 const SDL_Colour cmap[L + 1] =
-    {
-        {40, 40, 40, 255},
-        {0, 255, 255, 255},
-        {255, 255, 0, 255},
-        {255, 0, 255, 255},
-        {0, 255, 0, 255},
-        {255, 0, 0, 255},
-        {0, 0, 255, 255},
-        {255, 200, 0, 255}};
+        {
+                {40, 40, 40, 255},
+                {0, 255, 255, 255},
+                {255, 255, 0, 255},
+                {255, 0, 255, 255},
+                {0, 255, 0, 255},
+                {255, 0, 0, 255},
+                {0, 0, 255, 255},
+                {255, 200, 0, 255}};
 
 // initialisation des formes a l'aide de la fonction enum TETROMINOS et chaque lettre correspond a une forme
 
 const uint8_t starts[L][16] =
-    {
-        {E, E, E, E,
-         I, I, I, I,
-         E, E, E, E,
-         E, E, E, E},
-        {E, O, O, E,
-         E, O, O, E,
-         E, E, E, E,
-         E, E, E, E},
-        {E, T, E, E,
-         T, T, T, E,
-         E, E, E, E,
-         E, E, E, E},
-        {E, S, S, E,
-         S, S, E, E,
-         E, E, E, E,
-         E, E, E, E},
-        {Z, Z, E, E,
-         E, Z, Z, E,
-         E, E, E, E,
-         E, E, E, E},
-        {J, E, E, E,
-         J, J, J, E,
-         E, E, E, E,
-         E, E, E, E},
-        {E, E, L, E,
-         L, L, L, E,
-         E, E, E, E,
-         E, E, E, E}};
+        {
+                {E, E, E, E,
+                        I, I, I, I,
+                        E, E, E, E,
+                        E, E, E, E},
+                {E, O, O, E,
+                        E, O, O, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {E, T, E, E,
+                        T, T, T, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {E, S, S, E,
+                        S, S, E, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {Z, Z, E, E,
+                        E, Z, Z, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {J, E, E, E,
+                        J, J, J, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {E, E, L, E,
+                        L, L, L, E,
+                        E, E, E, E,
+                        E, E, E, E}};
 
 uint8_t field[400];
 
@@ -245,33 +273,22 @@ void droptick()
     y++;
 }
 
-const uint8_t ri[4][4] =
-    {
-        {0, 3, 15, 12},
-        {1, 7, 14, 8},
-        {4, 2, 11, 13},
-        {5, 6, 10, 9}};
-
-const uint8_t rr[2][4] =
-    {
-        {0, 2, 10, 8},
-        {1, 6, 9, 4}};
 
 void rotater(uint8_t temp[])
 {
     switch (falltype)
     {
-    case I:
-        for (uint8_t i = 0; i < 4; i++)
-            for (uint8_t j = 0; j < 4; j++)
-                temp[ri[i][(j + 1) % 4]] = piecebox[ri[i][j]];
-        break;
-    default:
-        for (uint8_t i = 0; i < 2; i++)
-            for (uint8_t j = 0; j < 4; j++)
-                temp[rr[i][(j + 1) % 4]] = piecebox[rr[i][j]];
+        case I:
+            for (uint8_t i = 0; i < 4; i++)
+                for (uint8_t j = 0; j < 4; j++)
+                    temp[ri[i][(j + 1) % 4]] = piecebox[ri[i][j]];
+            break;
+        default:
+            for (uint8_t i = 0; i < 2; i++)
+                for (uint8_t j = 0; j < 4; j++)
+                    temp[rr[i][(j + 1) % 4]] = piecebox[rr[i][j]];
 
-        temp[5] = piecebox[5];
+            temp[5] = piecebox[5];
     };
 }
 
@@ -279,33 +296,20 @@ void rotatel(uint8_t temp[])
 {
     switch (falltype)
     {
-    case I:
-        for (uint8_t i = 0; i < 4; i++)
-            for (uint8_t j = 0; j < 4; j++)
-                temp[ri[i][j]] = piecebox[ri[i][(j + 1) % 4]];
-        break;
-    default:
-        for (uint8_t i = 0; i < 2; i++)
-            for (uint8_t j = 0; j < 4; j++)
-                temp[rr[i][j]] = piecebox[rr[i][(j + 1) % 4]];
+        case I:
+            for (uint8_t i = 0; i < 4; i++)
+                for (uint8_t j = 0; j < 4; j++)
+                    temp[ri[i][j]] = piecebox[ri[i][(j + 1) % 4]];
+            break;
+        default:
+            for (uint8_t i = 0; i < 2; i++)
+                for (uint8_t j = 0; j < 4; j++)
+                    temp[rr[i][j]] = piecebox[rr[i][(j + 1) % 4]];
 
-        temp[5] = piecebox[5];
+            temp[5] = piecebox[5];
     };
 }
 
-const int8_t bi[4][4][2] =
-    {
-        {{-2, 0}, {1, 0}, {-2, -1}, {1, 2}},
-        {{-1, 0}, {2, 0}, {-1, 2}, {2, -1}},
-        {{2, 0}, {-1, 0}, {2, 1}, {-1, -2}},
-        {{1, 0}, {-2, 0}, {1, -2}, {-2, 1}}};
-
-const int8_t br[4][4][2] =
-    {
-        {{-1, 0}, {-1, 1}, {0, -2}, {-1, -2}},
-        {{1, 0}, {1, -1}, {0, 2}, {1, 2}},
-        {{1, 0}, {1, 1}, {0, -2}, {1, -2}},
-        {{-1, 0}, {-1, -1}, {0, 2}, {-1, 2}}};
 
 void rotate(bool right)
 {
@@ -357,145 +361,196 @@ void move(int8_t direction)
 }
 
 // ------------------------------------------------------------------------------
+int main(int argc, char* argv[]) {
 
-int main(int argc, char *argv[])
-{
-    SDL_Window *win;
-    SDL_Renderer *ren;
-    bool running = true;
+    // Initialisation de la SDL
+    SDL_Init(SDL_INIT_VIDEO);
 
-    uint32_t target = SDL_GetTicks();
-    srand(time(0));
+    // Création de la fenêtre
+    SDL_Window *window = SDL_CreateWindow("Menu avec SDL2", SDL_WINDOWPOS_CENTERED,
+                                          SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-    {
-        SDL_Log("%s", SDL_GetError());
-        return 1;
-    }
+    // Création du renderer
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 
-    SDL_CreateWindowAndRenderer(cellwidth * width, cellwidth * height, 0, &win, &ren);
+    // Création des rectangles pour les boutons
+    SDL_Rect jouer = {.x = WINDOW_WIDTH/2 - 50, .y = WINDOW_HEIGHT/2 - 25, .w = 100, .h = 50};
+    SDL_Rect quitter = {.x = WINDOW_WIDTH/2 - 50, .y = WINDOW_HEIGHT/2 + 25, .w = 100, .h = 50};
 
-    spawn();
-    while (running)
-    {
-
-        // musique
-
-        SDL_AudioSpec wavSpec;
-        Uint32 wavLength;
-        Uint8 *wavBuffer;
-        SDL_LoadWAV("../music/Brulux-Benzema-_Clip-Officiel_.wav", &wavSpec, &wavBuffer, &wavLength);
-        SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
-        SDL_PauseAudioDevice(deviceId, 0);
-
-        // musique
-
+    // Boucle principale
+    int continuer = 1;
+    while (continuer) {
         SDL_Event e;
-        while (SDL_PollEvent(&e))
-        {
-            switch (e.type)
-            {
-            case SDL_QUIT:
-                running = false;
-                break;
-            case SDL_KEYDOWN:
-                if (e.key.keysym.sym == SDLK_LEFT)
-                    move(-1);
-                if (e.key.keysym.sym == SDLK_RIGHT)
-                    move(1);
-                if (e.key.keysym.sym == SDLK_UP)
-                    rotate(true);
-                if (e.key.keysym.sym == SDLK_DOWN)
-                {
-                    if (bottom())
-                        droptimer = 4;
-                    else
-                        while (!bottom())
-                            droptick();
-                }
-            }
-        }
+        // Dessin des rectangles
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+        SDL_RenderFillRect(renderer, &jouer);
+        SDL_RenderFillRect(renderer, &quitter);
+        SDL_RenderPresent(renderer);
 
-        SDL_SetRenderDrawColor(ren, cmap[0].r, cmap[0].g, cmap[0].b, cmap[0].a);
-        SDL_RenderClear(ren);
+        // Attente d'un évènement
+        if (SDL_WaitEvent(&e)) {
+            // Actions en fonction de l'évènement
+            switch (e.type) {
+                case SDL_MOUSEBUTTONDOWN:
+                    // Vérifie si l'utilisateur a cliqué sur le bouton jouer
+                    if (e.button.x >= jouer.x && e.button.x <= jouer.x + jouer.w && e.button.y >= jouer.y && e.button.y <= jouer.y + jouer.h) {
+                        SDL_Window *win;
+                        SDL_Renderer *ren;
+                        bool running = true;
 
-        for (uint8_t i = 0; i < width; i++)
-        {
-            SDL_Rect r = {cellwidth * i, 0, cellwidth, cellwidth};
-            for (uint8_t j = 0; j < height; j++)
-            {
-                SDL_Colour c = cmap[field[i + j * width]];
-                SDL_SetRenderDrawColor(ren, c.r, c.g, c.b, c.a);
-                SDL_RenderFillRect(ren, &r);
-                r.y += cellwidth;
-            }
-        }
+                        uint32_t target = SDL_GetTicks();
+                        srand(time(0));
 
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            if (i < -x || x + i >= width)
-                continue;
-            SDL_Rect r = {cellwidth * (i + x), y * cellwidth, cellwidth, cellwidth};
-            for (uint8_t j = 0; j < 4; j++, r.y += cellwidth)
-            {
-                if (y + j >= height)
-                    continue;
-                if (piecebox[i + 4 * j] == E)
-                    continue;
-                SDL_Colour c = cmap[piecebox[i + 4 * j]];
-                SDL_SetRenderDrawColor(ren, c.r, c.g, c.b, 200);
-                SDL_RenderFillRect(ren, &r);
-            }
-        }
+                        if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+                        {
+                            SDL_Log("%s", SDL_GetError());
+                            return 1;
+                        }
 
-        SDL_SetRenderDrawColor(ren, cmap[0].r, cmap[0].g, cmap[0].b, cmap[0].a);
+                        SDL_CreateWindowAndRenderer(cellwidth * width, cellwidth * height, 0, &win, &ren);
 
-        for (uint8_t i = 0; i < width - 1; i++)
-            SDL_RenderDrawLine(ren, (i + 1) * cellwidth, 0, (i + 1) * cellwidth, height * cellwidth);
-        for (uint8_t j = 0; j < height - 1; j++)
-            SDL_RenderDrawLine(ren, 0, (j + 1) * cellwidth, width * cellwidth, (j + 1) * cellwidth);
+                        spawn();
+                        while (running)
+                        {
 
-        int8_t offset = 0;
+                            // musique
 
-        while (!intersect(piecebox, 0, offset++))
-            ;
-        offset -= 2;
+                            SDL_AudioSpec wavSpec;
+                            Uint32 wavLength;
+                            Uint8 *wavBuffer;
+                            SDL_LoadWAV("../music/Brulux-Benzema-_Clip-Officiel_.wav", &wavSpec, &wavBuffer, &wavLength);
+                            SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
+                            SDL_PauseAudioDevice(deviceId, 0);
 
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            if (i < -x || x + i >= width)
-                continue;
-            SDL_Rect r = {cellwidth * (i + x), (y + offset) * cellwidth, cellwidth, cellwidth};
-            for (uint8_t j = 0; j < 4; j++, r.y += cellwidth)
-            {
-                if (y + offset + j >= height)
-                    continue;
-                if (piecebox[i + 4 * j] == E)
-                    continue;
-                SDL_Colour c = cmap[piecebox[i + 4 * j]];
-                SDL_SetRenderDrawColor(ren, c.r, c.g, c.b, 200);
-                SDL_RenderDrawRect(ren, &r);
-            }
-        }
+                            // musique
 
-        SDL_RenderPresent(ren);
+                            SDL_Event e;
+                            while (SDL_PollEvent(&e))
+                            {
+                                switch (e.type)
+                                {
+                                    case SDL_QUIT:
+                                        running = false;
+                                        break;
+                                    case SDL_KEYDOWN:
+                                        if (e.key.keysym.sym == SDLK_LEFT)
+                                            move(-1);
+                                        if (e.key.keysym.sym == SDLK_RIGHT)
+                                            move(1);
+                                        if (e.key.keysym.sym == SDLK_UP)
+                                            rotate(true);
+                                        if (e.key.keysym.sym == SDLK_DOWN)
+                                        {
+                                            if (bottom())
+                                                droptimer = 4;
+                                            else
+                                                while (!bottom())
+                                                    droptick();
+                                        }
+                                }
+                            }
 
-        if (SDL_GetTicks() > target)
-        {
-            droptick();
-            target = SDL_GetTicks() + 100;
-            if (loss())
-            {
-                if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Vous avez perdu HAHAHAHAHA", "GAME OVER\nRetente ta chance ;) !", win) != 0)
-                    SDL_Log("%s", SDL_GetError());
-                running = false;
+                            SDL_SetRenderDrawColor(ren, cmap[0].r, cmap[0].g, cmap[0].b, cmap[0].a);
+                            SDL_RenderClear(ren);
+
+                            for (uint8_t i = 0; i < width; i++)
+                            {
+                                SDL_Rect r = {cellwidth * i, 0, cellwidth, cellwidth};
+                                for (uint8_t j = 0; j < height; j++)
+                                {
+                                    SDL_Colour c = cmap[field[i + j * width]];
+                                    SDL_SetRenderDrawColor(ren, c.r, c.g, c.b, c.a);
+                                    SDL_RenderFillRect(ren, &r);
+                                    r.y += cellwidth;
+                                }
+                            }
+
+                            for (uint8_t i = 0; i < 4; i++)
+                            {
+                                if (i < -x || x + i >= width)
+                                    continue;
+                                SDL_Rect r = {cellwidth * (i + x), y * cellwidth, cellwidth, cellwidth};
+                                for (uint8_t j = 0; j < 4; j++, r.y += cellwidth)
+                                {
+                                    if (y + j >= height)
+                                        continue;
+                                    if (piecebox[i + 4 * j] == E)
+                                        continue;
+                                    SDL_Colour c = cmap[piecebox[i + 4 * j]];
+                                    SDL_SetRenderDrawColor(ren, c.r, c.g, c.b, 200);
+                                    SDL_RenderFillRect(ren, &r);
+                                }
+                            }
+
+                            SDL_SetRenderDrawColor(ren, cmap[0].r, cmap[0].g, cmap[0].b, cmap[0].a);
+
+                            for (uint8_t i = 0; i < width - 1; i++)
+                                SDL_RenderDrawLine(ren, (i + 1) * cellwidth, 0, (i + 1) * cellwidth, height * cellwidth);
+                            for (uint8_t j = 0; j < height - 1; j++)
+                                SDL_RenderDrawLine(ren, 0, (j + 1) * cellwidth, width * cellwidth, (j + 1) * cellwidth);
+
+                            int8_t offset = 0;
+
+                            while (!intersect(piecebox, 0, offset++))
+                                ;
+                            offset -= 2;
+
+                            for (uint8_t i = 0; i < 4; i++)
+                            {
+                                if (i < -x || x + i >= width)
+                                    continue;
+                                SDL_Rect r = {cellwidth * (i + x), (y + offset) * cellwidth, cellwidth, cellwidth};
+                                for (uint8_t j = 0; j < 4; j++, r.y += cellwidth)
+                                {
+                                    if (y + offset + j >= height)
+                                        continue;
+                                    if (piecebox[i + 4 * j] == E)
+                                        continue;
+                                    SDL_Colour c = cmap[piecebox[i + 4 * j]];
+                                    SDL_SetRenderDrawColor(ren, c.r, c.g, c.b, 200);
+                                    SDL_RenderDrawRect(ren, &r);
+                                }
+                            }
+
+                            SDL_RenderPresent(ren);
+
+                            if (SDL_GetTicks() > target)
+                            {
+                                droptick();
+                                target = SDL_GetTicks() + 100;
+                                if (loss())
+                                {
+                                    if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Vous avez perdu HAHAHAHAHA", "GAME OVER\nRetente ta chance ;) !", win) != 0)
+                                        SDL_Log("%s", SDL_GetError());
+                                    running = false;
+                                }
+                            }
+                        }
+
+                        SDL_DestroyWindow(win);
+                        SDL_DestroyRenderer(ren);
+                        SDL_Quit();
+
+
+
+                    }
+                        // Vérifie si l'utilisateur a cliqué sur le bouton quitter
+                    else if (e.button.x >= quitter.x && e.button.x <= quitter.x + quitter.w && e.button.y >= quitter.y && e.button.y <= quitter.y + quitter.h) {
+                        continuer = 0;
+                    }
+                    break;
+                case SDL_QUIT:
+                    continuer = 0;
+                    break;
             }
         }
     }
-
-    SDL_DestroyWindow(win);
-    SDL_DestroyRenderer(ren);
+    // Libération des ressources
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
     SDL_Quit();
 
-    return 0;
+    return EXIT_SUCCESS;
 }

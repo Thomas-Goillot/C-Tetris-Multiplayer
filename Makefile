@@ -10,6 +10,5 @@ main.o : src/main.c
 
 
 clean :
-	rm -rf *.o
-	rm -rf *.exe
-
+	rm -rf $(OBJ)*.o
+	rm -rf $(EXE)
