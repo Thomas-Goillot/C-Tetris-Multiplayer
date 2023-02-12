@@ -1,25 +1,8 @@
-/*
-Auteur: Ibrahim OUBIHI / Thomas Goillot / Joshua TANG TONG HI
-Date : rendu du 01/02/2023
-Sujet : Réaliser un Tetris en langage C a l'aide de la bibliotheque graphique SDL
-*/
-
-/*
-TODO :
-- ajouter comptage de points
-- ajouter une musique d'ambiance
-- ajouter une interface d'accueil
-- ajouter un systeme de sauvgarde de points en reseau
- */
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
-#include <SDL2/SDL_audio.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
-
-// initialisation de la taille du tableau en hauteur et largeur, ainsi que la taille de chaque cellules
 
 const uint8_t height = 40;
 const uint8_t width = 10;
@@ -27,7 +10,7 @@ const uint8_t cellwidth = 20;
 
 enum TETROMINOS
 {
-    E, // vide
+    E, // empty
     I,
     O,
     T,
@@ -47,8 +30,6 @@ const SDL_Colour cmap[L + 1] =
         {255, 0, 0, 255},
         {0, 0, 255, 255},
         {255, 200, 0, 255}};
-
-// initialisation des formes a l'aide de la fonction enum TETROMINOS et chaque lettre correspond a une forme
 
 const uint8_t starts[L][16] =
     {
@@ -89,37 +70,34 @@ uint8_t falltype;
 uint8_t rstate = 0;
 uint8_t droptimer = 0;
 
-// chargement des formes suivantes de manières aleatoires
+// randomizer
+uint8_t bagcur = 7;
+uint8_t bag[7];
 
-uint8_t formecur = 7;
-uint8_t forme[7];
-
-void nouvelle_forme()
+void newbag()
 {
     for (uint8_t i = 0; i < 7; i++)
-        forme[i] = i + 1;
+        bag[i] = i + 1;
 
     for (uint8_t i = 6; i > 0; i--)
     {
         uint8_t t;
         uint8_t num = rand() % (i + 1);
 
-        t = forme[i];
-        forme[i] = forme[num];
-        forme[num] = t;
+        t = bag[i];
+        bag[i] = bag[num];
+        bag[num] = t;
     }
 
-    formecur = 0;
+    bagcur = 0;
 }
-
-// apparition de la prochaine forme
 
 void spawn()
 {
-    if (formecur >= 7)
-        nouvelle_forme();
+    if (bagcur >= 7)
+        newbag();
 
-    falltype = forme[formecur++];
+    falltype = bag[bagcur++];
 
     x = 3;
     y = 0;
@@ -142,8 +120,6 @@ void place()
         }
 }
 
-// Verification fin de partie
-
 bool loss()
 {
     for (uint8_t i = 0; i < width; i++)
@@ -153,13 +129,10 @@ bool loss()
     return false;
 }
 
-// Nettoyer la ligne en cas de ligne complete
-
 void clearline()
 {
     uint8_t l;
     uint8_t lines = 0;
-    // uint64_t score = 0;    //affichage du score
 
     for (l = 0; l < height; l++)
     {
@@ -176,7 +149,6 @@ void clearline()
 
         if (lines && !line)
             break;
-        // score++,
     }
 
     for (l; l > lines; l--)
@@ -211,20 +183,16 @@ bool bottom()
 {
     return intersect(piecebox, 0, 1);
 
+    /*
     for (uint8_t i = 0; i < 4; i++)
-    {
         for (uint8_t j = 0; j < 4; j++)
         {
-            if (piecebox[i + 4 * j] == E)
-                continue;
-            if (j + y + 1 == height)
-                return true;
-            if (field[x + i + width * (y + j + 1)] != E)
-                return true;
+            if (piecebox[i + 4*j] == E) continue;
+            if (j + y + 1 == height) return true;
+            if (field[x + i + width * (y + j + 1)] != E) return true;
         }
-        return false;
-    }
-    // ----------------------------------------------------------------
+    return false;
+    */
 }
 
 void droptick()
@@ -307,6 +275,8 @@ const int8_t br[4][4][2] =
         {{1, 0}, {1, 1}, {0, -2}, {1, -2}},
         {{-1, 0}, {-1, -1}, {0, 2}, {-1, 2}}};
 
+// #define b (falltype == I ? bi : br)
+
 void rotate(bool right)
 {
     if (falltype == E || falltype == O)
@@ -347,6 +317,8 @@ void rotate(bool right)
     rstate = (rstate + rdir + 4) % 4;
 }
 
+// #undef b
+
 void move(int8_t direction)
 {
     if (intersect(piecebox, direction, 0))
@@ -355,8 +327,6 @@ void move(int8_t direction)
     droptimer = 0;
     x += direction;
 }
-
-// ------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
 {
@@ -378,18 +348,6 @@ int main(int argc, char *argv[])
     spawn();
     while (running)
     {
-
-        // musique
-
-        SDL_AudioSpec wavSpec;
-        Uint32 wavLength;
-        Uint8 *wavBuffer;
-        SDL_LoadWAV("../music/Brulux-Benzema-_Clip-Officiel_.wav", &wavSpec, &wavBuffer, &wavLength);
-        SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
-        SDL_PauseAudioDevice(deviceId, 0);
-
-        // musique
-
         SDL_Event e;
         while (SDL_PollEvent(&e))
         {
@@ -416,9 +374,11 @@ int main(int argc, char *argv[])
             }
         }
 
+        // background
         SDL_SetRenderDrawColor(ren, cmap[0].r, cmap[0].g, cmap[0].b, cmap[0].a);
         SDL_RenderClear(ren);
 
+        // field
         for (uint8_t i = 0; i < width; i++)
         {
             SDL_Rect r = {cellwidth * i, 0, cellwidth, cellwidth};
@@ -431,6 +391,7 @@ int main(int argc, char *argv[])
             }
         }
 
+        // dropping piece
         for (uint8_t i = 0; i < 4; i++)
         {
             if (i < -x || x + i >= width)
@@ -448,6 +409,7 @@ int main(int argc, char *argv[])
             }
         }
 
+        // grid lines
         SDL_SetRenderDrawColor(ren, cmap[0].r, cmap[0].g, cmap[0].b, cmap[0].a);
 
         for (uint8_t i = 0; i < width - 1; i++)
@@ -455,6 +417,7 @@ int main(int argc, char *argv[])
         for (uint8_t j = 0; j < height - 1; j++)
             SDL_RenderDrawLine(ren, 0, (j + 1) * cellwidth, width * cellwidth, (j + 1) * cellwidth);
 
+        // dropshadow
         int8_t offset = 0;
 
         while (!intersect(piecebox, 0, offset++))
@@ -478,6 +441,7 @@ int main(int argc, char *argv[])
             }
         }
 
+        // finalize render
         SDL_RenderPresent(ren);
 
         if (SDL_GetTicks() > target)
@@ -486,7 +450,7 @@ int main(int argc, char *argv[])
             target = SDL_GetTicks() + 100;
             if (loss())
             {
-                if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Vous avez perdu HAHAHAHAHA", "GAME OVER\nRetente ta chance ;) !", win) != 0)
+                if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "you lose", "GAME OVER\nyou let the squares stack up too high!", win) != 0)
                     SDL_Log("%s", SDL_GetError());
                 running = false;
             }
