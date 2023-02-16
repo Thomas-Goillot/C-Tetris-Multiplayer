@@ -413,6 +413,51 @@ int main(int argc, char *argv[])
     //Boucle principale
     while (running)
     {
+
+
+        //Dessiner le menu
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        //Dessiner le bouton jouer
+        SDL_Color color = {255, 255, 255, 255};
+        SDL_Surface *surface = TTF_RenderText_Solid(font, "Jouer", color);
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_Rect Play; //create a rect
+
+        if (SDL_QueryTexture(texture, NULL, NULL, &Play.w, &Play.h) != 0)
+        {
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
+            printf("erreur texture");
+        }
+
+        Play.x = (WINDOW_WIDTH - Play.w) / 2;  //controls the rect's x coordinate
+        Play.y = (WINDOW_HEIGHT - Play.h) / 2; // controls the rect's y coordinte
+//        SDL_Rect rect = {300, 200, 200, 100};
+        SDL_RenderCopy(renderer, texture, NULL, &Play);
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
+
+        //Dessiner le bouton Quitter
+        surface = TTF_RenderText_Solid(font, "Quitter", color);
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_Rect Quitter; //create a rect
+        if (SDL_QueryTexture(texture, NULL, NULL, &Quitter.w, &Quitter.h) != 0)
+        {
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
+            printf("erreur texture");
+        }
+
+        Quitter.x = (WINDOW_WIDTH - Quitter.w) / 2;  //controls the rect's x coordinate
+        Quitter.y = (WINDOW_HEIGHT -Quitter.h) / 2+100; // controls the rect's y coordinte
+        SDL_RenderCopy(renderer, texture, NULL, &Quitter);
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
+
+        //Mettre à jour le renderer
+        SDL_RenderPresent(renderer);
         //Traiter les événements
         while (SDL_PollEvent(&event))
         {
@@ -436,51 +481,19 @@ int main(int argc, char *argv[])
                             break;
                     }
                     break;
+                case SDL_MOUSEBUTTONDOWN:
+                    // Vérifie si l'utilisateur a cliqué sur le bouton jouer
+                    if (event.button.x >= Play.x && event.button.x <= Play.x + Play.w && event.button.y >= Play.y && event.button.y <= Play.y + Play.h) {
+                        jouer();
+                    }
+                     //Vérifie si l'utilisateur a cliqué sur le bouton quitter
+                    else if (event.button.x >= Quitter.x && event.button.x <= Quitter.x + Quitter.w && event.button.y >= Quitter.y &&event.button.y <=Quitter.y + Quitter.h) {
+                     running = 0;
+                     break;
+                    }
+
             }
         }
-
-        //Dessiner le menu
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-
-        //Dessiner le bouton jouer
-        SDL_Color color = {255, 255, 255, 255};
-        SDL_Surface *surface = TTF_RenderText_Solid(font, "Jouer", color);
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_Rect rect; //create a rect
-
-        if (SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h) != 0)
-        {
-            SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
-            printf("erreur texture");
-        }
-
-        rect.x = (WINDOW_WIDTH - rect.w) / 2;  //controls the rect's x coordinate
-        rect.y = (WINDOW_HEIGHT - rect.h) / 2; // controls the rect's y coordinte
-//        SDL_Rect rect = {300, 200, 200, 100};
-        SDL_RenderCopy(renderer, texture, NULL, &rect);
-        SDL_FreeSurface(surface);
-        SDL_DestroyTexture(texture);
-
-        //Dessiner le bouton Quitter
-        surface = TTF_RenderText_Solid(font, "Quitter", color);
-        texture = SDL_CreateTextureFromSurface(renderer, surface);
-        if (SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h) != 0)
-        {
-            SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
-            printf("erreur texture");
-        }
-
-        rect.x = (WINDOW_WIDTH - rect.w) / 2;  //controls the rect's x coordinate
-        rect.y = (WINDOW_HEIGHT - rect.h) / 2+100; // controls the rect's y coordinte
-        SDL_RenderCopy(renderer, texture, NULL, &rect);
-        SDL_FreeSurface(surface);
-        SDL_DestroyTexture(texture);
-
-        //Mettre à jour le renderer
-        SDL_RenderPresent(renderer);
     }
 
     //Libérer les ressources
@@ -497,6 +510,7 @@ void jouer()
     SDL_Window *win;
     SDL_Renderer *ren;
     bool running = true;
+    SDL_Event event;
 
     uint32_t target = SDL_GetTicks();
     srand(time(0));
@@ -513,39 +527,30 @@ void jouer()
     while (running)
     {
 
-        // musique
-
-        SDL_AudioSpec wavSpec;
-        Uint32 wavLength;
-        Uint8 *wavBuffer;
-        SDL_LoadWAV("../music/Brulux-Benzema-_Clip-Officiel_.wav", &wavSpec, &wavBuffer, &wavLength);
-        SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
-        SDL_PauseAudioDevice(deviceId, 0);
-
-        // musique
-
-        SDL_Event e;
-        while (SDL_PollEvent(&e))
-        {
-            switch (e.type)
-            {
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
                 case SDL_QUIT:
-                    running = false;
+                    //Si l'utilisateur a cliqué sur la croix de fermeture
+                    running = 0;
                     break;
                 case SDL_KEYDOWN:
-                    if (e.key.keysym.sym == SDLK_LEFT)
+                    if (event.key.keysym.sym == SDLK_ESCAPE)
+                        //Si l'utilisateur appuie sur la touche échap
+                        running = 0;
+                        break;
+                    if (event.key.keysym.sym == SDLK_LEFT)
                         move(-1);
-                    if (e.key.keysym.sym == SDLK_RIGHT)
+                   if (event.key.keysym.sym == SDLK_RIGHT)
                         move(1);
-                    if (e.key.keysym.sym == SDLK_UP)
+                    if (event.key.keysym.sym == SDLK_UP)
                         rotate(true);
-                    if (e.key.keysym.sym == SDLK_DOWN)
-                    {
+                   if (event.key.keysym.sym == SDLK_DOWN) {
                         if (bottom())
                             droptimer = 4;
                         else
                             while (!bottom())
                                 droptick();
+
                     }
             }
         }
