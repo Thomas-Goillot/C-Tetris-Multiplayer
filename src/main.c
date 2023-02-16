@@ -1,3 +1,6 @@
+/* Déclaration des fonctions */
+void jouer(); // Fonction qui lance le jeu
+//Le point d'entrée du programme
 /*
 Auteur: Ibrahim OUBIHI / Thomas Goillot / Joshua TANG TONG HI
 Date : rendu du 01/02/2023
@@ -18,8 +21,35 @@ TODO :
 #include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
+#include <stdio.h>
+#include <SDL2/SDL_ttf.h>
+
+const int8_t bi[4][4][2] =
+        {
+                {{-2, 0}, {1, 0}, {-2, -1}, {1, 2}},
+                {{-1, 0}, {2, 0}, {-1, 2}, {2, -1}},
+                {{2, 0}, {-1, 0}, {2, 1}, {-1, -2}},
+                {{1, 0}, {-2, 0}, {1, -2}, {-2, 1}}};
+
+const int8_t br[4][4][2] =
+        {
+                {{-1, 0}, {-1, 1}, {0, -2}, {-1, -2}},
+                {{1, 0}, {1, -1}, {0, 2}, {1, 2}},
+                {{1, 0}, {1, 1}, {0, -2}, {1, -2}},
+                {{-1, 0}, {-1, -1}, {0, 2}, {-1, 2}}};
 
 // initialisation de la taille du tableau en hauteur et largeur, ainsi que la taille de chaque cellules
+const uint8_t ri[4][4] =
+        {
+                {0, 3, 15, 12},
+                {1, 7, 14, 8},
+                {4, 2, 11, 13},
+                {5, 6, 10, 9}};
+
+const uint8_t rr[2][4] =
+        {
+                {0, 2, 10, 8},
+                {1, 6, 9, 4}};
 
 const uint8_t height = 40;
 const uint8_t width = 10;
@@ -38,48 +68,48 @@ enum TETROMINOS
 };
 
 const SDL_Colour cmap[L + 1] =
-    {
-        {40, 40, 40, 255},
-        {0, 255, 255, 255},
-        {255, 255, 0, 255},
-        {255, 0, 255, 255},
-        {0, 255, 0, 255},
-        {255, 0, 0, 255},
-        {0, 0, 255, 255},
-        {255, 200, 0, 255}};
+        {
+                {40, 40, 40, 255},
+                {0, 255, 255, 255},
+                {255, 255, 0, 255},
+                {255, 0, 255, 255},
+                {0, 255, 0, 255},
+                {255, 0, 0, 255},
+                {0, 0, 255, 255},
+                {255, 200, 0, 255}};
 
 // initialisation des formes a l'aide de la fonction enum TETROMINOS et chaque lettre correspond a une forme
 
 const uint8_t starts[L][16] =
-    {
-        {E, E, E, E,
-         I, I, I, I,
-         E, E, E, E,
-         E, E, E, E},
-        {E, O, O, E,
-         E, O, O, E,
-         E, E, E, E,
-         E, E, E, E},
-        {E, T, E, E,
-         T, T, T, E,
-         E, E, E, E,
-         E, E, E, E},
-        {E, S, S, E,
-         S, S, E, E,
-         E, E, E, E,
-         E, E, E, E},
-        {Z, Z, E, E,
-         E, Z, Z, E,
-         E, E, E, E,
-         E, E, E, E},
-        {J, E, E, E,
-         J, J, J, E,
-         E, E, E, E,
-         E, E, E, E},
-        {E, E, L, E,
-         L, L, L, E,
-         E, E, E, E,
-         E, E, E, E}};
+        {
+                {E, E, E, E,
+                        I, I, I, I,
+                        E, E, E, E,
+                        E, E, E, E},
+                {E, O, O, E,
+                        E, O, O, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {E, T, E, E,
+                        T, T, T, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {E, S, S, E,
+                        S, S, E, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {Z, Z, E, E,
+                        E, Z, Z, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {J, E, E, E,
+                        J, J, J, E,
+                        E, E, E, E,
+                        E, E, E, E},
+                {E, E, L, E,
+                        L, L, L, E,
+                        E, E, E, E,
+                        E, E, E, E}};
 
 uint8_t field[400];
 
@@ -245,33 +275,22 @@ void droptick()
     y++;
 }
 
-const uint8_t ri[4][4] =
-    {
-        {0, 3, 15, 12},
-        {1, 7, 14, 8},
-        {4, 2, 11, 13},
-        {5, 6, 10, 9}};
-
-const uint8_t rr[2][4] =
-    {
-        {0, 2, 10, 8},
-        {1, 6, 9, 4}};
 
 void rotater(uint8_t temp[])
 {
     switch (falltype)
     {
-    case I:
-        for (uint8_t i = 0; i < 4; i++)
-            for (uint8_t j = 0; j < 4; j++)
-                temp[ri[i][(j + 1) % 4]] = piecebox[ri[i][j]];
-        break;
-    default:
-        for (uint8_t i = 0; i < 2; i++)
-            for (uint8_t j = 0; j < 4; j++)
-                temp[rr[i][(j + 1) % 4]] = piecebox[rr[i][j]];
+        case I:
+            for (uint8_t i = 0; i < 4; i++)
+                for (uint8_t j = 0; j < 4; j++)
+                    temp[ri[i][(j + 1) % 4]] = piecebox[ri[i][j]];
+            break;
+        default:
+            for (uint8_t i = 0; i < 2; i++)
+                for (uint8_t j = 0; j < 4; j++)
+                    temp[rr[i][(j + 1) % 4]] = piecebox[rr[i][j]];
 
-        temp[5] = piecebox[5];
+            temp[5] = piecebox[5];
     };
 }
 
@@ -279,33 +298,20 @@ void rotatel(uint8_t temp[])
 {
     switch (falltype)
     {
-    case I:
-        for (uint8_t i = 0; i < 4; i++)
-            for (uint8_t j = 0; j < 4; j++)
-                temp[ri[i][j]] = piecebox[ri[i][(j + 1) % 4]];
-        break;
-    default:
-        for (uint8_t i = 0; i < 2; i++)
-            for (uint8_t j = 0; j < 4; j++)
-                temp[rr[i][j]] = piecebox[rr[i][(j + 1) % 4]];
+        case I:
+            for (uint8_t i = 0; i < 4; i++)
+                for (uint8_t j = 0; j < 4; j++)
+                    temp[ri[i][j]] = piecebox[ri[i][(j + 1) % 4]];
+            break;
+        default:
+            for (uint8_t i = 0; i < 2; i++)
+                for (uint8_t j = 0; j < 4; j++)
+                    temp[rr[i][j]] = piecebox[rr[i][(j + 1) % 4]];
 
-        temp[5] = piecebox[5];
+            temp[5] = piecebox[5];
     };
 }
 
-const int8_t bi[4][4][2] =
-    {
-        {{-2, 0}, {1, 0}, {-2, -1}, {1, 2}},
-        {{-1, 0}, {2, 0}, {-1, 2}, {2, -1}},
-        {{2, 0}, {-1, 0}, {2, 1}, {-1, -2}},
-        {{1, 0}, {-2, 0}, {1, -2}, {-2, 1}}};
-
-const int8_t br[4][4][2] =
-    {
-        {{-1, 0}, {-1, 1}, {0, -2}, {-1, -2}},
-        {{1, 0}, {1, -1}, {0, 2}, {1, 2}},
-        {{1, 0}, {1, 1}, {0, -2}, {1, -2}},
-        {{-1, 0}, {-1, -1}, {0, 2}, {-1, 2}}};
 
 void rotate(bool right)
 {
@@ -355,10 +361,138 @@ void move(int8_t direction)
     droptimer = 0;
     x += direction;
 }
-
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
 // ------------------------------------------------------------------------------
-
 int main(int argc, char *argv[])
+{
+    SDL_Window *window = NULL; //La fenêtre que nous allons utiliser
+    SDL_Renderer *renderer = NULL; //Le rendu que nous allons utiliser
+    TTF_Font *font = NULL; //La police que nous allons utiliser
+    SDL_Event event; //Gestion des événements
+    int running = 1; //variable pour boucle principale
+
+    //initialisation de la SDL
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
+        printf("Erreur d'initialisation de la SDL: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    //initialisation de la TTF
+    if (TTF_Init() < 0)
+    {
+        printf("Erreur d'initialisation de la TTF: %s\n", TTF_GetError());
+        return 1;
+    }
+
+    //création de la fenêtre
+    window = SDL_CreateWindow("Mon Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+    if (window == NULL)
+    {
+        printf("Erreur de création de la fenêtre: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    //création du rendu
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL)
+    {
+        printf("Erreur de création du rendu: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    //chargement de la police
+    font = TTF_OpenFont("arial.ttf",50);
+    if (font == NULL)
+    {
+        printf("Erreur de chargement de la police: %s\n", TTF_GetError());
+        return 1;
+    }
+
+    //Boucle principale
+    while (running)
+    {
+        //Traiter les événements
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+                case SDL_QUIT:
+                    //Si l'utilisateur a cliqué sur la croix de fermeture
+                    running = 0;
+                    break;
+                case SDL_KEYDOWN:
+                    //Si l'utilisateur appuie sur une touche
+                    switch (event.key.keysym.sym)
+                    {
+                        case SDLK_ESCAPE:
+                            //Si l'utilisateur appuie sur la touche échap
+                            running = 0;
+                            break;
+                        case SDLK_RETURN:
+                            //Si l'utilisateur appuie sur la touche entrée
+                            jouer();
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        //Dessiner le menu
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        //Dessiner le bouton jouer
+        SDL_Color color = {255, 255, 255, 255};
+        SDL_Surface *surface = TTF_RenderText_Solid(font, "Jouer", color);
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_Rect rect; //create a rect
+
+        if (SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h) != 0)
+        {
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
+            printf("erreur texture");
+        }
+
+        rect.x = (WINDOW_WIDTH - rect.w) / 2;  //controls the rect's x coordinate
+        rect.y = (WINDOW_HEIGHT - rect.h) / 2; // controls the rect's y coordinte
+//        SDL_Rect rect = {300, 200, 200, 100};
+        SDL_RenderCopy(renderer, texture, NULL, &rect);
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
+
+        //Dessiner le bouton Quitter
+        surface = TTF_RenderText_Solid(font, "Quitter", color);
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        if (SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h) != 0)
+        {
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
+            printf("erreur texture");
+        }
+
+        rect.x = (WINDOW_WIDTH - rect.w) / 2;  //controls the rect's x coordinate
+        rect.y = (WINDOW_HEIGHT - rect.h) / 2+100; // controls the rect's y coordinte
+        SDL_RenderCopy(renderer, texture, NULL, &rect);
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
+
+        //Mettre à jour le renderer
+        SDL_RenderPresent(renderer);
+    }
+
+    //Libérer les ressources
+    TTF_CloseFont(font);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    TTF_Quit();
+    SDL_Quit();
+
+    return 0;
+}
+void jouer()
 {
     SDL_Window *win;
     SDL_Renderer *ren;
@@ -395,24 +529,24 @@ int main(int argc, char *argv[])
         {
             switch (e.type)
             {
-            case SDL_QUIT:
-                running = false;
-                break;
-            case SDL_KEYDOWN:
-                if (e.key.keysym.sym == SDLK_LEFT)
-                    move(-1);
-                if (e.key.keysym.sym == SDLK_RIGHT)
-                    move(1);
-                if (e.key.keysym.sym == SDLK_UP)
-                    rotate(true);
-                if (e.key.keysym.sym == SDLK_DOWN)
-                {
-                    if (bottom())
-                        droptimer = 4;
-                    else
-                        while (!bottom())
-                            droptick();
-                }
+                case SDL_QUIT:
+                    running = false;
+                    break;
+                case SDL_KEYDOWN:
+                    if (e.key.keysym.sym == SDLK_LEFT)
+                        move(-1);
+                    if (e.key.keysym.sym == SDLK_RIGHT)
+                        move(1);
+                    if (e.key.keysym.sym == SDLK_UP)
+                        rotate(true);
+                    if (e.key.keysym.sym == SDLK_DOWN)
+                    {
+                        if (bottom())
+                            droptimer = 4;
+                        else
+                            while (!bottom())
+                                droptick();
+                    }
             }
         }
 
@@ -495,7 +629,7 @@ int main(int argc, char *argv[])
 
     SDL_DestroyWindow(win);
     SDL_DestroyRenderer(ren);
-    SDL_Quit();
+  
 
-    return 0;
+
 }
