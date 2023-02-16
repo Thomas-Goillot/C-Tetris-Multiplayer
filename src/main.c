@@ -361,7 +361,8 @@ void move(int8_t direction)
     droptimer = 0;
     x += direction;
 }
-
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
 // ------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
@@ -386,7 +387,7 @@ int main(int argc, char *argv[])
     }
 
     //création de la fenêtre
-    window = SDL_CreateWindow("Mon Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Mon Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL)
     {
         printf("Erreur de création de la fenêtre: %s\n", SDL_GetError());
@@ -402,7 +403,7 @@ int main(int argc, char *argv[])
     }
 
     //chargement de la police
-    font = TTF_OpenFont("arial.ttf", 24);
+    font = TTF_OpenFont("arial.ttf",50);
     if (font == NULL)
     {
         printf("Erreur de chargement de la police: %s\n", TTF_GetError());
@@ -446,7 +447,18 @@ int main(int argc, char *argv[])
         SDL_Color color = {255, 255, 255, 255};
         SDL_Surface *surface = TTF_RenderText_Solid(font, "Jouer", color);
         SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_Rect rect = {300, 200, 200, 100};
+        SDL_Rect rect; //create a rect
+
+        if (SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h) != 0)
+        {
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
+            printf("erreur texture");
+        }
+
+        rect.x = (WINDOW_WIDTH - rect.w) / 2;  //controls the rect's x coordinate
+        rect.y = (WINDOW_HEIGHT - rect.h) / 2; // controls the rect's y coordinte
+//        SDL_Rect rect = {300, 200, 200, 100};
         SDL_RenderCopy(renderer, texture, NULL, &rect);
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
@@ -454,8 +466,15 @@ int main(int argc, char *argv[])
         //Dessiner le bouton Quitter
         surface = TTF_RenderText_Solid(font, "Quitter", color);
         texture = SDL_CreateTextureFromSurface(renderer, surface);
-        rect.x = 300;
-        rect.y = 350;
+        if (SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h) != 0)
+        {
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
+            printf("erreur texture");
+        }
+
+        rect.x = (WINDOW_WIDTH - rect.w) / 2;  //controls the rect's x coordinate
+        rect.y = (WINDOW_HEIGHT - rect.h) / 2+100; // controls the rect's y coordinte
         SDL_RenderCopy(renderer, texture, NULL, &rect);
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
