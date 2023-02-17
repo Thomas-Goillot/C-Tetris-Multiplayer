@@ -142,6 +142,7 @@ int main(int argc, char *argv[])
                         case SDLK_RETURN:
                             //Si l'utilisateur appuie sur la touche entrée
 //                            jouer();
+                            system("start Jeu.exe");
                             break;
                     }
                     break;
@@ -149,6 +150,9 @@ int main(int argc, char *argv[])
                     // Vérifie si l'utilisateur a cliqué sur le bouton jouer
                     if (event.button.x >= Play.x && event.button.x <= Play.x + Play.w && event.button.y >= Play.y && event.button.y <= Play.y + Play.h) {
 //                        jouer();
+                        system("start Jeu.exe");
+                        int data = atoi(argv[1]);
+                        printf("Data from client.c: %d\n", data);
                     }
                      //Vérifie si l'utilisateur a cliqué sur le bouton quitter
                     else if (event.button.x >= Quitter.x && event.button.x <= Quitter.x + Quitter.w && event.button.y >= Quitter.y &&event.button.y <=Quitter.y + Quitter.h) {

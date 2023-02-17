@@ -434,6 +434,15 @@ int main(int argc, char *argv[]) {
                 if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Vous avez perdu HAHAHAHAHA",
                                              "GAME OVER\nRetente ta chance ;) !", win) != 0)
                     SDL_Log("%s", SDL_GetError());
+                char* data="fdp";
+//
+//                char command[200];
+//
+//                sprintf(command, "menu.c %s", data);
+//                printf("%s",command);
+//                system(command);
+                system("menu.c data");
+
                 running = false;
             }
         }
