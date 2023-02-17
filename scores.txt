@@ -5,8 +5,6 @@ thomas 23
 thomas 23
 thomas 23
 thomas 22
-thomas 22 0
-thomas 22 0
-thomas 23 0
-thomas 24 0
-thomas 23 0
+thomas 22
+tredcsfercecer 24 0
+tredcsfercecer 23 0

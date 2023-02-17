@@ -109,8 +109,18 @@ int main(int argc, char *argv[])
         // Set the text color
         SDL_Color color = {255, 255, 255, 255};
 
-        // Define the array of text to be displayed
-        char *text_array[] = {"Line 1", "Line 2", "Line 3", "Line 4", "Line 5"};
+        char *text_array[] = {0};
+            // Define the array of text to be displayed
+        for (int i = 0; i < MAX_PLAYERS; i++)
+        {
+            if (players[i][0][0] != '\0')
+            {
+                char *text = malloc(100);
+                sprintf(text, "%s - %s", players[i][0], players[i][1]);
+                text_array[i] = text;
+            }
+        }
+
 
         // Create a surface for the text
         SDL_Surface *surface = NULL;
