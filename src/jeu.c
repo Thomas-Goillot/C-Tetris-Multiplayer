@@ -321,7 +321,7 @@ void move(int8_t direction) {
     x += direction;
 }
 
-int sendDataToServer(char *name, int score)
+char *sendDataToServer(char *name, int score)
 {
     // initialiser Winsock
     WSADATA wsaData;
@@ -329,7 +329,7 @@ int sendDataToServer(char *name, int score)
     if (result != 0)
     {
         printf("Erreur : impossible d'initialiser Winsock\n");
-        return 1;
+        return "Erreur : impossible d'initialiser Winsock\n";
     }
 
     // créer la socket du client
@@ -338,7 +338,7 @@ int sendDataToServer(char *name, int score)
     {
         printf("Erreur : impossible de creer la socket du client\n");
         WSACleanup();
-        return 1;
+        return "Erreur : impossible de creer la socket du client\n";
     }
 
     // se connecter au serveur
@@ -352,7 +352,7 @@ int sendDataToServer(char *name, int score)
         printf("Erreur : impossible de se connecter au serveur\n");
         closesocket(clientSocket);
         WSACleanup();
-        return 1;
+        return "Erreur : impossible de se connecter au serveur\n";
     }
 
     // envoyer les données au serveur
@@ -363,12 +363,12 @@ int sendDataToServer(char *name, int score)
         printf("Erreur : impossible d'envoyer les donnees au serveur\n");
         closesocket(clientSocket);
         WSACleanup();
-        return 1;
+        return "Erreur : impossible d'envoyer les donnees au serveur\n";
     }
 
     // recevoir la réponse du serveur
-    char response[1024];
-    int numBytes = recv(clientSocket, response, sizeof(response) - 1, 0);
+    char *response = (char *)malloc(1024 * sizeof(char));
+    int numBytes = recv(clientSocket, response, 1024, 0);
     if (numBytes == SOCKET_ERROR)
     {
         printf("Erreur : impossible de recevoir la reponse du serveur\n");
@@ -376,7 +376,7 @@ int sendDataToServer(char *name, int score)
     else
     {
         response[numBytes] = '\0';
-        printf("Reponse reçue : %s\n", response);
+        //printf("Reponse recue : %s\n", response);
     }
 
     // fermer la socket du client
@@ -385,7 +385,7 @@ int sendDataToServer(char *name, int score)
     // fermer Winsock
     WSACleanup();
 
-    return 0;
+    return response;
 }
 
 int main(int argc, char *argv[]) {
@@ -511,10 +511,10 @@ int main(int argc, char *argv[]) {
                                              "GAME OVER\nRetente ta chance ;) !", win) != 0)
                     SDL_Log("%s", SDL_GetError());
 
-                sendDataToServer(name , score);
+                char* data = sendDataToServer(name, score);
 
+                printf("data : %s", data);
 
-                char* data = "test98765-test2456"; // variable à envoyer à Menu.exe
                 char command[500];
                 sprintf(command, "start menu2.exe %s %s", name, data);
                 system(command);

@@ -6,33 +6,56 @@
 #include <stdbool.h>
 #include <time.h>
 #include <stdio.h>
+#include <string.h>
 #include <SDL2/SDL_ttf.h>
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
 //fonction qui retourne un tableau de string contenant le nom et le score des joueurs et qui prends en parametre une string a split avec - comme separateur
-char **split(char *str)
-{
-    char input_str[] = "-test-1235-joueur2-2345-Joueur3-567";
-    char *token;
-    char *delimiter = "-";
+#define MAX_PLAYERS 5
+#define MAX_NAME_LENGTH 50
 
-    token = strtok(input_str, delimiter);
-    while (token != NULL)
+void splitPlayers(char *str, char players[MAX_PLAYERS][2][MAX_NAME_LENGTH])
+{
+    int i = 0, j = 0, k = 0, l = 0;
+    char name[MAX_NAME_LENGTH];
+
+    while (str[i] != '\0' && k < MAX_PLAYERS)
     {
-        printf("NOM: %s SCORE: %s\n", token, strtok(NULL, delimiter));
-        token = strtok(NULL, delimiter);
+        if (str[i] != '-')
+        {
+            name[j] = str[i];
+            j++;
+        }
+        else
+        {
+            name[j] = '\0';
+            j = 0;
+            strncpy(players[k][l], name, MAX_NAME_LENGTH);
+            l++;
+            if (l >= 2)
+            {
+                k++;
+                l = 0;
+            }
+        }
+        i++;
     }
+
+    // Ajouter le dernier joueur
+    name[j] = '\0';
+    strncpy(players[k][l], name, MAX_NAME_LENGTH);
 }
 
-
 char *name;
+char players[MAX_PLAYERS][2][MAX_NAME_LENGTH];
 // ------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
 
     name = argv[1];                // nom du joueur
+    splitPlayers(argv[2], players);   // tableau de string contenant le nom et le score des joueurs
     SDL_Window *window = NULL;     // La fenêtre que nous allons utiliser
     SDL_Renderer *renderer = NULL; // Le rendu que nous allons utiliser
     TTF_Font *font = NULL;         // La police que nous allons utiliser
@@ -100,7 +123,7 @@ int main(int argc, char *argv[])
 
         Play.x = (WINDOW_WIDTH - Play.w) / 2;  // controls the rect's x coordinate
         Play.y = (WINDOW_HEIGHT - Play.h) / 2; // controls the rect's y coordinte
-                                               //        SDL_Rect rect = {300, 200, 200, 100};
+        // SDL_Rect rect = {300, 200, 200, 100};
         SDL_RenderCopy(renderer, texture, NULL, &Play);
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
