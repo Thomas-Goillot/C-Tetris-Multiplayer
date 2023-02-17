@@ -4,7 +4,7 @@ LDFLAGS = -L lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -mwindows -lws2_32
 
 CFLAGS_SERVER = -Wall -Wextra -pedantic -std=c11
 LDFLAGS_SERVER = -lws2_32
-all: Menu Jeu
+all: Menu Jeu Server
 
 Menu : menu.o
 	$(CC) menu.o -o Menu $(LDFLAGS)

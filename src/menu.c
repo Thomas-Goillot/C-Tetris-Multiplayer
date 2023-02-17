@@ -27,9 +27,18 @@ TODO :
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+
+char* name;
 // ------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+
+    if (argc != 2)
+    {
+        printf("Usage : Programme.exe nom\n");
+        return 1;
+    }
+    name = argv[1];            // nom du joueur
     SDL_Window *window = NULL; //La fenêtre que nous allons utiliser
     SDL_Renderer *renderer = NULL; //Le rendu que nous allons utiliser
     TTF_Font *font = NULL; //La police que nous allons utiliser
@@ -150,6 +159,12 @@ int main(int argc, char *argv[])
                     // Vérifie si l'utilisateur a cliqué sur le bouton jouer
                     if (event.button.x >= Play.x && event.button.x <= Play.x + Play.w && event.button.y >= Play.y && event.button.y <= Play.y + Play.h) {
 //                        jouer();
+
+                        //demarre jeu.exe avec name en parametre
+                        char command[100];
+                        sprintf(command, "start Jeu.exe %s", name);
+                        system(command);
+
                         system("start Jeu.exe");
                         int data = atoi(argv[1]);
                         printf("Data from client.c: %d\n", data);
