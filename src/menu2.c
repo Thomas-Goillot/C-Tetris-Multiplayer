@@ -14,16 +14,16 @@
 //fonction qui retourne un tableau de string contenant le nom et le score des joueurs et qui prends en parametre une string a split avec - comme separateur
 char **split(char *str)
 {
-    char **tab = malloc(sizeof(char *) * 2);
-    char *token = strtok(str, "-");
-    int i = 0;
+    char input_str[] = "-test-1235-joueur2-2345-Joueur3-567";
+    char *token;
+    char *delimiter = "-";
+
+    token = strtok(input_str, delimiter);
     while (token != NULL)
     {
-        tab[i] = token;
-        token = strtok(NULL, "-");
-        i++;
+        printf("NOM: %s SCORE: %s\n", token, strtok(NULL, delimiter));
+        token = strtok(NULL, delimiter);
     }
-    return tab;
 }
 
 
