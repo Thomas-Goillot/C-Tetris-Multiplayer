@@ -514,9 +514,9 @@ int main(int argc, char *argv[]) {
                 sendDataToServer(name , score);
 
 
-                char *data = "fdp"; // variable à envoyer à Menu.exe
-                char command[128];
-                snprintf(command, sizeof(command), "Start Menu.exe %s", data);
+                char* data = "test98765-test2456"; // variable à envoyer à Menu.exe
+                char command[500];
+                sprintf(command, "start menu2.exe %s %s", name, data);
                 system(command);
 
                 running = false;
