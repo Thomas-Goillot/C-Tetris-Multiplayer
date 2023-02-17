@@ -159,13 +159,14 @@ int main(int argc, char *argv[])
                     // Vérifie si l'utilisateur a cliqué sur le bouton jouer
                     if (event.button.x >= Play.x && event.button.x <= Play.x + Play.w && event.button.y >= Play.y && event.button.y <= Play.y + Play.h) {
 //                        jouer();
-
                         //demarre jeu.exe avec name en parametre
                         char command[100];
                         sprintf(command, "start Jeu.exe %s", name);
                         system(command);
                         int data = atoi(argv[1]);
                         printf("Data from client.c: %d\n", data);
+                        running = 0;
+                        break;
                     }
                      //Vérifie si l'utilisateur a cliqué sur le bouton quitter
                     else if (event.button.x >= Quitter.x && event.button.x <= Quitter.x + Quitter.w && event.button.y >= Quitter.y &&event.button.y <=Quitter.y + Quitter.h) {
