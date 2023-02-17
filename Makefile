@@ -5,11 +5,11 @@ LDFLAGS = -L lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -mwindows -lws2_32
 CFLAGS_SERVER = -Wall -Wextra -pedantic -std=c11
 LDFLAGS_SERVER = -lws2_32
 
-Programme : main.o
-	$(CC) main.o -o Programme $(LDFLAGS)
+Programme : jeu.o
+	$(CC) jeu.o -o Programme $(LDFLAGS)
 
-main.o : src/main.c
-	$(CC) $(CFLAGS) -c src/main.c -o main.o
+jeu.o : src/jeu.c
+	$(CC) $(CFLAGS) -c src/jeu.c -o jeu.o
 
 # Serveur
 Server : server.o
