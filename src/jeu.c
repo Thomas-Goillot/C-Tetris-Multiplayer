@@ -516,7 +516,7 @@ int main(int argc, char *argv[]) {
                 printf("data : %s", data);
 
                 char command[500];
-                sprintf(command, "start menu2.exe %s %s", name, data);
+                sprintf(command, "start score.exe %s %s", name, data);
                 system(command);
 
                 running = false;

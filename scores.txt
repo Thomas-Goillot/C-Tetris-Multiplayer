@@ -1,10 +1,9 @@
-thomas 960
-test 920
-thomas 24
-thomas 23
-thomas 23
-thomas 23
-thomas 22
-thomas 22
-tredcsfercecer 24 0
-tredcsfercecer 23 0
+JOshua 47
+UI 23
+JOshua 22
+ui 22
+JOshua 22
+JOshua 22
+JOshua 22
+TOTO 10
+UI 23 0

@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     }
 
     //création de la fenêtre
-    window = SDL_CreateWindow("Mon Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL)
     {
         printf("Erreur de création de la fenêtre: %s\n", SDL_GetError());

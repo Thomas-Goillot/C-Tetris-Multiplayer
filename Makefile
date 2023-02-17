@@ -7,7 +7,7 @@ OBJ = obj/
 CFLAGS_SERVER = -Wall -Wextra -pedantic -std=c11
 LDFLAGS_SERVER = -lws2_32
 
-all: clean menu menu2 jeu server
+all: clean menu score jeu server
 
 # Menu
 menu : menu.o
@@ -16,11 +16,11 @@ menu : menu.o
 menu.o : $(SRC)menu.c
 	$(CC) $(CFLAGS) -c $(SRC)menu.c -o $(OBJ)menu.o
 
-menu2 : menu2.o
-	$(CC) $(OBJ)menu2.o -o menu2 $(LDFLAGS)
+score : score.o
+	$(CC) $(OBJ)score.o -o score $(LDFLAGS)
 
-menu2.o : $(SRC)menu2.c
-	$(CC) $(CFLAGS) -c $(SRC)menu2.c -o $(OBJ)menu2.o
+score.o : $(SRC)score.c
+	$(CC) $(CFLAGS) -c $(SRC)score.c -o $(OBJ)score.o
 
 # Jeu
 jeu : jeu.o
