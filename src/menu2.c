@@ -11,8 +11,6 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
-
-//fonction qui retourne un tableau de string contenant le nom et le score des joueurs et qui prends en parametre une string a split avec - comme separateur
 #define MAX_PLAYERS 5
 #define MAX_NAME_LENGTH 50
 
