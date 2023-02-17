@@ -167,7 +167,6 @@ bool loss() {
 void clearline() {
     uint8_t l;
     uint8_t lines = 0;
-    // uint64_t score = 0;    //affichage du score
 
     for (l = 0; l < height; l++) {
         bool line = true;
@@ -182,7 +181,6 @@ void clearline() {
 
         if (lines && !line)
             break;
-        score++;
     }
 
     for (l; l > lines; l--) {
@@ -190,6 +188,7 @@ void clearline() {
             field[i + (l - 1) * width] = field[i + (l - 1 - lines) * width];
         }
     }
+    score++;
 }
 
 bool intersect(uint8_t temp[], int8_t xoff, int8_t yoff) {
@@ -512,21 +511,15 @@ int main(int argc, char *argv[]) {
                                              "GAME OVER\nRetente ta chance ;) !", win) != 0)
                     SDL_Log("%s", SDL_GetError());
 
-//                char* data="fdp";
-//
-//                char command[200];
-//
-//                sprintf(command, "Start Menu.exe %s", data);
-//                printf("%s",command);
-//                system(command);
+                sendDataToServer(name , score);
+
+
                 char *data = "fdp"; // variable à envoyer à Menu.exe
                 char command[128];
                 snprintf(command, sizeof(command), "Start Menu.exe %s", data);
                 system(command);
 
-
                 running = false;
-                sendDataToServer(name , score);
 
             }
         }

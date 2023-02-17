@@ -1,3 +1,2 @@
-test 920 0
-test 1396 0
-test 880 0
+test 920
+thomas 960 0
