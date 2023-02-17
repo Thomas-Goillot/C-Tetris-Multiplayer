@@ -12,19 +12,19 @@
 #define WINDOW_HEIGHT 600
 
 //fonction qui retourne un tableau de string contenant le nom et le score des joueurs et qui prends en parametre une string a split avec - comme separateur
-char **split(char *str)
-{
-    char input_str[] = "-test-1235-joueur2-2345-Joueur3-567";
-    char *token;
-    char *delimiter = "-";
-
-    token = strtok(input_str, delimiter);
-    while (token != NULL)
-    {
-        printf("NOM: %s SCORE: %s\n", token, strtok(NULL, delimiter));
-        token = strtok(NULL, delimiter);
-    }
-}
+//char **split(char *str)
+//{
+//    char input_str[] = "-test-1235-joueur2-2345-Joueur3-567";
+//    char *token;
+//    char *delimiter = "-";
+//
+//    token = strtok(input_str, delimiter);
+//    while (token != NULL)
+//    {
+//        printf("NOM: %s SCORE: %s\n", token, strtok(NULL, delimiter));
+//        token = strtok(NULL, delimiter);
+//    }
+//}
 
 
 char *name;
@@ -85,28 +85,66 @@ int main(int argc, char *argv[])
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // Dessiner le bouton jouer
+        // Set the text color
         SDL_Color color = {255, 255, 255, 255};
-        SDL_Surface *surface = TTF_RenderText_Solid(font, argv[1], color);
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_Rect Play; // create a rect
 
-        if (SDL_QueryTexture(texture, NULL, NULL, &Play.w, &Play.h) != 0)
-        {
-            SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
-            printf("erreur texture");
+        // Define the array of text to be displayed
+        char *text_array[] = {"Line 1", "Line 2", "Line 3", "Line 4", "Line 5"};
+
+        // Create a surface for the text
+        SDL_Surface *surface = NULL;
+
+        // Create a texture for the text
+        SDL_Texture *texture = NULL;
+
+        // Define the text position
+        SDL_Rect Play;
+        Play.x;
+        Play.y = 10;
+
+        // Loop through the array of text and display each line
+        for (int i = 0; i < 5; i++) {
+
+            // Render the text to a surface
+            surface = TTF_RenderText_Solid(font, text_array[i], color);
+            if (surface == NULL) {
+                SDL_Log("Unable to render text: %s", TTF_GetError());
+                return 1;
+            }
+
+            // Create a texture from the surface
+            texture = SDL_CreateTextureFromSurface(renderer, surface);
+            if (texture == NULL) {
+                SDL_Log("Unable to create texture: %s", SDL_GetError());
+                return 1;
+            }
+
+            // Get the size of the text texture
+            int text_width = 0;
+            int text_height = 0;
+            SDL_QueryTexture(texture, NULL, NULL, &text_width, &text_height);
+
+            // Set the text position
+            Play.w = text_width;
+            Play.h = text_height;
+
+            // Copy the texture to the renderer
+            SDL_RenderCopy(renderer, texture, NULL, &Play);
+
+            // Free the surface and texture
+            SDL_FreeSurface(surface);
+            SDL_DestroyTexture(texture);
+
+            // Increment the text position for the next line
+            Play.x = ((WINDOW_WIDTH - Play.w) / 2);
+            Play.y += text_height + 10;
         }
 
-        Play.x = (WINDOW_WIDTH - Play.w) / 2;  // controls the rect's x coordinate
-        Play.y = (WINDOW_HEIGHT - Play.h) / 2; // controls the rect's y coordinte
-                                               //        SDL_Rect rect = {300, 200, 200, 100};
-        SDL_RenderCopy(renderer, texture, NULL, &Play);
-        SDL_FreeSurface(surface);
-        SDL_DestroyTexture(texture);
+
+
 
         // Dessiner le bouton Quitter
-        surface = TTF_RenderText_Solid(font, argv[2], color);
+        surface = TTF_RenderText_Solid(font, "Retour", color);
         texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_Rect Quitter; // create a rect
         if (SDL_QueryTexture(texture, NULL, NULL, &Quitter.w, &Quitter.h) != 0)
@@ -141,28 +179,15 @@ int main(int argc, char *argv[])
                     // Si l'utilisateur appuie sur la touche échap
                     running = 0;
                     break;
-                case SDLK_RETURN:
-                    // Si l'utilisateur appuie sur la touche entrée
-                    //                            jouer();
-                    system("start Jeu.exe");
-                    break;
                 }
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                // Vérifie si l'utilisateur a cliqué sur le bouton jouer
-                if (event.button.x >= Play.x && event.button.x <= Play.x + Play.w && event.button.y >= Play.y && event.button.y <= Play.y + Play.h)
-                {
-
-                    char command[100];
-                    sprintf(command, "start Jeu.exe %s", name);
-                    system(command);
-
-                    running = 0;
-                    break;
-                }
                 // Vérifie si l'utilisateur a cliqué sur le bouton quitter
-                else if (event.button.x >= Quitter.x && event.button.x <= Quitter.x + Quitter.w && event.button.y >= Quitter.y && event.button.y <= Quitter.y + Quitter.h)
+                if (event.button.x >= Quitter.x && event.button.x <= Quitter.x + Quitter.w && event.button.y >= Quitter.y && event.button.y <= Quitter.y + Quitter.h)
                 {
+                    char command[500];
+                    sprintf(command, "start menu.exe %s", name);
+                    system(command);
                     running = 0;
                     break;
                 }
