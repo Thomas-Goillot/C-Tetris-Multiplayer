@@ -40,11 +40,9 @@ int read_scores_from_file(const char *filename, Player players[])
     int i = 0;
     while (fscanf(fp, "%s %d", players[i].name, &players[i].score) == 2)
     {
-        printf("%s %d", players[i].name, players[i].score);
         i++;
     }
 
-    
 
     fclose(fp);
     return i;
@@ -58,15 +56,9 @@ int compare_players(const void *a, const void *b)
     return playerB->score - playerA->score;
 }
 
-int main(int argc, char *argv[])
+int main()
 {
-    if (argc != 2)
-    {
-        printf("Usage : server.exe fichier_scores\n");
-        return 1;
-    }
-
-    const char *filename = argv[1];
+    const char *filename = "scores.txt";
 
     // initialiser Winsock
     WSADATA wsaData;

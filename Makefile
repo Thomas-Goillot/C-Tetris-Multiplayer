@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -I include
-LDFLAGS = -L lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -mwindows
+LDFLAGS = -L lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -mwindows -lws2_32
 
 CFLAGS_SERVER = -Wall -Wextra -pedantic -std=c11
 LDFLAGS_SERVER = -lws2_32

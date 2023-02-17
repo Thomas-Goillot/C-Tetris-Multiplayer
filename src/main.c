@@ -1,5 +1,5 @@
 /* Déclaration des fonctions */
-void jouer(); // Fonction qui lance le jeu
+int jouer(); // Fonction qui lance le jeu
 //Le point d'entrée du programme
 /*
 Auteur: Ibrahim OUBIHI / Thomas Goillot / Joshua TANG TONG HI
@@ -23,6 +23,7 @@ TODO :
 #include <time.h>
 #include <stdio.h>
 #include <SDL2/SDL_ttf.h>
+#include <winsock2.h>
 
 const int8_t bi[4][4][2] =
         {
@@ -124,6 +125,9 @@ uint8_t droptimer = 0;
 uint8_t formecur = 7;
 uint8_t forme[7];
 
+char* name;
+int score = 0; // affichage du score
+
 void nouvelle_forme()
 {
     for (uint8_t i = 0; i < 7; i++)
@@ -189,7 +193,6 @@ void clearline()
 {
     uint8_t l;
     uint8_t lines = 0;
-    // uint64_t score = 0;    //affichage du score
 
     for (l = 0; l < height; l++)
     {
@@ -206,7 +209,7 @@ void clearline()
 
         if (lines && !line)
             break;
-        // score++,
+        score++;
     }
 
     for (l; l > lines; l--)
@@ -361,16 +364,95 @@ void move(int8_t direction)
     droptimer = 0;
     x += direction;
 }
+
+int sendDataToServer(char *name, int score)
+{
+    // initialiser Winsock
+    WSADATA wsaData;
+    int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (result != 0)
+    {
+        printf("Erreur : impossible d'initialiser Winsock\n");
+        return 1;
+    }
+
+    // créer la socket du client
+    SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (clientSocket == INVALID_SOCKET)
+    {
+        printf("Erreur : impossible de creer la socket du client\n");
+        WSACleanup();
+        return 1;
+    }
+
+    // se connecter au serveur
+    struct sockaddr_in serverAddr;
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_port = htons(1234);
+
+    if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
+    {
+        printf("Erreur : impossible de se connecter au serveur\n");
+        closesocket(clientSocket);
+        WSACleanup();
+        return 1;
+    }
+
+    // envoyer les données au serveur
+    char buffer[1024];
+    sprintf(buffer, "%s %d", name, score);
+    if (send(clientSocket, buffer, strlen(buffer), 0) == SOCKET_ERROR)
+    {
+        printf("Erreur : impossible d'envoyer les donnees au serveur\n");
+        closesocket(clientSocket);
+        WSACleanup();
+        return 1;
+    }
+
+    // recevoir la réponse du serveur
+    char response[1024];
+    int numBytes = recv(clientSocket, response, sizeof(response) - 1, 0);
+    if (numBytes == SOCKET_ERROR)
+    {
+        printf("Erreur : impossible de recevoir la reponse du serveur\n");
+    }
+    else
+    {
+        response[numBytes] = '\0';
+        printf("Reponse reçue : %s\n", response);
+    }
+
+    // fermer la socket du client
+    closesocket(clientSocket);
+
+    // fermer Winsock
+    WSACleanup();
+
+    return 0;
+}
+
+
+
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 // ------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+
+    if (argc != 2)
+    {
+        printf("Usage : Programme.exe nom\n");
+        return 1;
+    }
+    name = argv[1]; //nom du joueur
     SDL_Window *window = NULL; //La fenêtre que nous allons utiliser
     SDL_Renderer *renderer = NULL; //Le rendu que nous allons utiliser
     TTF_Font *font = NULL; //La police que nous allons utiliser
     SDL_Event event; //Gestion des événements
     int running = 1; //variable pour boucle principale
+
+
 
     //initialisation de la SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -492,7 +574,7 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-void jouer()
+int jouer()
 {
     SDL_Window *win;
     SDL_Renderer *ren;
@@ -623,6 +705,9 @@ void jouer()
                 if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Vous avez perdu HAHAHAHAHA", "GAME OVER\nRetente ta chance ;) !", win) != 0)
                     SDL_Log("%s", SDL_GetError());
                 running = false;
+
+                sendDataToServer(name , score);
+
             }
         }
     }
@@ -630,6 +715,4 @@ void jouer()
     SDL_DestroyWindow(win);
     SDL_DestroyRenderer(ren);
   
-
-
 }
