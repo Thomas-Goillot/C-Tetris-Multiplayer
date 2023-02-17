@@ -156,6 +156,7 @@ int main()
         // renvoyer les 5 meilleurs scores au client
         char scoresMessage[500] = "";
 
+        numPlayers = read_scores_from_file(filename, players);
 
         //trier le tableau de joueurs par score décroissant
         qsort(players, numPlayers, sizeof(Player), compare_players);
