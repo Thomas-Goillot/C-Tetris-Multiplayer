@@ -164,8 +164,6 @@ int main(int argc, char *argv[])
                         char command[100];
                         sprintf(command, "start Jeu.exe %s", name);
                         system(command);
-
-                        system("start Jeu.exe");
                         int data = atoi(argv[1]);
                         printf("Data from client.c: %d\n", data);
                     }
