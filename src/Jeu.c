@@ -434,14 +434,19 @@ int main(int argc, char *argv[]) {
                 if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Vous avez perdu HAHAHAHAHA",
                                              "GAME OVER\nRetente ta chance ;) !", win) != 0)
                     SDL_Log("%s", SDL_GetError());
-                char* data="fdp";
+
+//                char* data="fdp";
 //
 //                char command[200];
 //
-//                sprintf(command, "menu.c %s", data);
+//                sprintf(command, "Start Menu.exe %s", data);
 //                printf("%s",command);
 //                system(command);
-                system("menu.c data");
+                char *data = "fdp"; // variable à envoyer à Menu.exe
+                char command[128];
+                snprintf(command, sizeof(command), "Start Menu.exe %s", data);
+                system(command);
+
 
                 running = false;
             }

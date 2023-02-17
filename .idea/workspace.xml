@@ -62,7 +62,7 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/CLionProjects/2_eme_annee/github tetris/C-Tetris-Multiplayer&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/CLionProjects/2_eme_annee/github tetris/test&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -86,7 +86,8 @@
       <workItem from="1676214511807" duration="9750000" />
       <workItem from="1676548214065" duration="8571000" />
       <workItem from="1676585179857" duration="1775000" />
-      <workItem from="1676642976449" duration="2935000" />
+      <workItem from="1676642976449" duration="4281000" />
+      <workItem from="1676647445280" duration="759000" />
     </task>
     <servers />
   </component>
