@@ -3,144 +3,188 @@
 #include <string.h>
 #include <winsock2.h>
 
-#define MAX_PLAYERS 100    // nombre maximum de joueurs
-#define MAX_NAME_LENGTH 50 // longueur maximale du nom du joueur
+#define MAX_PLAYERS 100
 
-// structure représentant un joueur
-struct Player
+typedef struct
 {
-    char name[MAX_NAME_LENGTH];
+    char name[50];
     int score;
-};
+} Player;
 
-// fonction de comparaison pour le tri des joueurs par score décroissant
-int comparePlayers(const void *a, const void *b)
+void write_scores_to_file(const char *filename, Player players[], int numPlayers)
 {
-    struct Player *playerA = (struct Player *)a;
-    struct Player *playerB = (struct Player *)b;
-    return (playerB->score - playerA->score);
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL)
+    {
+        printf("Erreur : impossible d'ouvrir le fichier %s\n", filename);
+        return;
+    }
+
+    for (int i = 0; i < numPlayers; i++)
+    {
+        fprintf(fp, "%s %d\n", players[i].name, players[i].score);
+    }
+
+    fclose(fp);
 }
 
-int main()
+int read_scores_from_file(const char *filename, Player players[])
 {
-    WSADATA wsaData;
-    SOCKET serverSocket, clientSocket;
-    struct sockaddr_in serverAddress, clientAddress;
-    int clientAddressSize = sizeof(clientAddress);
-    char buffer[1024];
-    struct Player players[MAX_PLAYERS]; // tableau de joueurs
-    int numPlayers = 0;                 // nombre de joueurs enregistrés
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL)
+    {
+        printf("Le fichier %s n'existe pas, il sera créé.\n", filename);
+        return 0;
+    }
+
+    int i = 0;
+    while (fscanf(fp, "%s %d", players[i].name, &players[i].score) == 2)
+    {
+        printf("%s %d", players[i].name, players[i].score);
+        i++;
+    }
+
+    
+
+    fclose(fp);
+    return i;
+}
+
+int compare_players(const void *a, const void *b)
+{
+    const Player *playerA = (const Player *)a;
+    const Player *playerB = (const Player *)b;
+
+    return playerB->score - playerA->score;
+}
+
+int main(int argc, char *argv[])
+{
+    if (argc != 2)
+    {
+        printf("Usage : server.exe fichier_scores\n");
+        return 1;
+    }
+
+    const char *filename = argv[1];
 
     // initialiser Winsock
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+    WSADATA wsaData;
+    int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (result != 0)
     {
         printf("Erreur : impossible d'initialiser Winsock\n");
         return 1;
     }
 
     // créer la socket du serveur
-    serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (serverSocket == INVALID_SOCKET)
     {
         printf("Erreur : impossible de créer la socket du serveur\n");
+        WSACleanup();
         return 1;
     }
 
-    // lier la socket du serveur à l'adresse IP et au port spécifiés
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
-    serverAddress.sin_port = htons(1234);
-    if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR)
+    // lier la socket à l'adresse IP locale et au port 1234
+    struct sockaddr_in serverAddr;
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serverAddr.sin_port = htons(1234);
+
+    if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
     {
         printf("Erreur : impossible de lier la socket du serveur à l'adresse IP et au port spécifiés\n");
+        closesocket(serverSocket);
+        WSACleanup();
         return 1;
     }
 
-    // mettre le serveur en écoute
+    // écouter les connexions entrantes
     if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR)
     {
-        printf("Erreur : impossible de mettre le serveur en écoute\n");
+        printf("Erreur : impossible d'écouter les connexions entrantes\n");
+        closesocket(serverSocket);
+        WSACleanup();
         return 1;
     }
+
+    printf("En attente de connexions...\n");
+
+    // initialiser le tableau de joueurs
+    Player players[MAX_PLAYERS];
+    int numPlayers = read_scores_from_file(filename, players);
 
     // boucle principale du serveur
     while (1)
     {
-        printf("En attente de connexion...\n");
-
-        // accepter une connexion entrante
-        clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &clientAddressSize);
+        // accepter une nouvelle connexion
+        SOCKET clientSocket = accept(serverSocket, NULL, NULL);
         if (clientSocket == INVALID_SOCKET)
         {
-            printf("Erreur : impossible d'accepter une connexion entrante\n");
+            printf("Erreur : impossible d'accepter une nouvelle connexion\n");
+            closesocket(serverSocket);
+            WSACleanup();
             return 1;
         }
 
-        printf("Connexion acceptée : %s\n", inet_ntoa(clientAddress.sin_addr));
+        printf("Nouvelle connexion acceptée.\n");
 
-        // recevoir les données du client
-        int received = recv(clientSocket, buffer, sizeof(buffer), 0);
-        if (received == SOCKET_ERROR)
+        // recevoir le nom et le score du joueur
+        char playerName[50];
+        int playerScore;
+        int bytesReceived = recv(clientSocket, playerName, sizeof(playerName), 0);
+        if (bytesReceived == SOCKET_ERROR)
         {
-            printf("Erreur : impossible de recevoir les données du client\n");
+            printf("Erreur : impossible de recevoir les données du joueur\n");
             closesocket(clientSocket);
             continue;
         }
 
-        // extraire le nom et le score du buffer
-        char name[MAX_NAME_LENGTH];
-
-        int score = 0;
-        sscanf(buffer, "%s %d", name, &score);
-        printf("Données reçues : %s %d\n", name, score);
-
-        // ajouter le joueur au tableau de joueurs
-        if (numPlayers < MAX_PLAYERS)
-        {
-            struct Player player;
-            strcpy(player.name, name);
-            player.score = score;
-            players[numPlayers] = player;
-            numPlayers++;
-        }
+        // ajouter le joueur au tableau
+        playerName[bytesReceived] = '\0';
+        Player newPlayer;
+        strncpy(newPlayer.name, playerName, sizeof(newPlayer.name));
+        newPlayer.score = playerScore;
+        players[numPlayers] = newPlayer;
+        numPlayers++;
 
         // trier le tableau de joueurs par score décroissant
-        qsort(players, numPlayers, sizeof(struct Player), comparePlayers);
+        qsort(players, numPlayers, sizeof(Player), compare_players);
 
-        // enregistrer les 5 meilleurs scores dans un fichier texte
-        FILE *file = fopen("scores.txt", "w");
-        if (file == NULL)
+        // limiter le nombre de joueurs à MAX_PLAYERS
+        if (numPlayers > MAX_PLAYERS)
         {
-            printf("Erreur : impossible d'ouvrir le fichier scores.txt\n");
+            numPlayers = MAX_PLAYERS;
+        }
+
+        // écrire les scores dans le fichier
+        write_scores_to_file(filename, players, numPlayers);
+
+        // renvoyer les 5 meilleurs scores au client
+        char scoresMessage[256] = "";
+        for (int i = 0; i < 5 && i < numPlayers; i++)
+        {
+            char scoreLine[50];
+            sprintf(scoreLine, "%s %d\n", players[i].name, players[i].score);
+            strncat(scoresMessage, scoreLine, sizeof(scoresMessage) - strlen(scoresMessage) - 1);
+        }
+
+        if (send(clientSocket, scoresMessage, strlen(scoresMessage), 0) == SOCKET_ERROR)
+        {
+            printf("Erreur : impossible d'envoyer les scores au client\n");
             closesocket(clientSocket);
             continue;
         }
 
-        fprintf(file, "Meilleurs scores :\n");
-        for (int i = 0; i < numPlayers && i < 5; i++)
-        {
-            fprintf(file, "%s : %d\n", players[i].name, players[i].score);
-        }
-
-        fclose(file);
-
-        // envoyer la réponse au client
-        const char *response = "Score enregistré.";
-
-
-        if (send(clientSocket, response, strlen(response), 0) == SOCKET_ERROR)
-        {
-            printf("Erreur : impossible d'envoyer la réponse au client\n");
-        }
-
-        // fermer la socket du client
+        // fermer la connexion avec le client
         closesocket(clientSocket);
     }
 
     // fermer la socket du serveur
     closesocket(serverSocket);
 
-    // fermer Winsock
+    // libérer Winsock
     WSACleanup();
 
     return 0;

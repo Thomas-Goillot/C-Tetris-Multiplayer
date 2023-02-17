@@ -1,5 +1,7 @@
-Meilleurs scores :
-Joshua : 99999
-Ibra : 10100
-Ibra : 10100
-thomas : 100
+Joshua 99999 0
+Thomas 67 0
+Thomas 100 0
+Thomas 23 0
+ibra 10 0
+Thomas 7999 0
+Thomas 10000 0

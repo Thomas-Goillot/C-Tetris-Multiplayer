@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <winsock2.h>
 
-#pragma comment(lib, "ws2_32.lib")
-
 int main(int argc, char *argv[])
 {
     if (argc != 3)
@@ -27,7 +25,7 @@ int main(int argc, char *argv[])
     SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (clientSocket == INVALID_SOCKET)
     {
-        printf("Erreur : impossible de créer la socket du client\n");
+        printf("Erreur : impossible de creer la socket du client\n");
         WSACleanup();
         return 1;
     }
@@ -51,7 +49,7 @@ int main(int argc, char *argv[])
     sprintf(buffer, "%s %d", name, score);
     if (send(clientSocket, buffer, strlen(buffer), 0) == SOCKET_ERROR)
     {
-        printf("Erreur : impossible d'envoyer les données au serveur\n");
+        printf("Erreur : impossible d'envoyer les donnees au serveur\n");
         closesocket(clientSocket);
         WSACleanup();
         return 1;
@@ -62,12 +60,12 @@ int main(int argc, char *argv[])
     int numBytes = recv(clientSocket, response, sizeof(response) - 1, 0);
     if (numBytes == SOCKET_ERROR)
     {
-        printf("Erreur : impossible de recevoir la réponse du serveur\n");
+        printf("Erreur : impossible de recevoir la reponse du serveur\n");
     }
     else
     {
         response[numBytes] = '\0';
-        printf("Réponse reçue : %s\n", response);
+        printf("Reponse reçue : %s\n", response);
     }
 
     // fermer la socket du client
