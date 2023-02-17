@@ -14,9 +14,12 @@
   <component name="ChangeListManager">
     <list default="true" id="3bc8f03e-c4f1-426e-892d-7f1c4f1f0fb3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Programme.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Programme.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.o" beforeDir="false" afterPath="$PROJECT_DIR$/main.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jeu.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Jeu.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jeu.o" beforeDir="false" afterPath="$PROJECT_DIR$/Jeu.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Menu.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Menu.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/menu.o" beforeDir="false" afterPath="$PROJECT_DIR$/menu.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Jeu.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Jeu.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/menu.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/menu.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,11 +62,12 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/CLionProjects/2_eme_annee/github tetris/C-Tetris-Multiplayer&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/CLionProjects/2_eme_annee/github tetris/test&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -80,7 +84,10 @@
       <workItem from="1676038589262" duration="332000" />
       <workItem from="1676211747857" duration="1893000" />
       <workItem from="1676214511807" duration="9750000" />
-      <workItem from="1676548214065" duration="4608000" />
+      <workItem from="1676548214065" duration="8571000" />
+      <workItem from="1676585179857" duration="1775000" />
+      <workItem from="1676642976449" duration="4281000" />
+      <workItem from="1676647445280" duration="759000" />
     </task>
     <servers />
   </component>
