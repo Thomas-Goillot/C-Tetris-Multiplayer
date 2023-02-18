@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 
         // Define the text position
         SDL_Rect Play;
-        Play.x;
+        Play.x = ((WINDOW_WIDTH - Play.w) / 2);
         Play.y =70;
 
         // Loop through the array of text and display each line
@@ -156,13 +156,12 @@ int main(int argc, char *argv[])
             }
 
             // Get the size of the text texture
-            int text_width = 0;
-            int text_height = 0;
-            SDL_QueryTexture(texture, NULL, NULL, &text_width, &text_height);
+
+            SDL_QueryTexture(texture, NULL, NULL,&Play.w, &Play.h);
 
             // Set the text position
-            Play.w = text_width;
-            Play.h = text_height;
+
+
 
             // Copy the texture to the renderer
             SDL_RenderCopy(renderer, texture, NULL, &Play);
@@ -172,8 +171,7 @@ int main(int argc, char *argv[])
             SDL_DestroyTexture(texture);
 
             // Increment the text position for the next line
-            Play.x = ((WINDOW_WIDTH - Play.w) / 2);
-            Play.y += text_height + 10;
+            Play.y += Play.h + 10;
         }
 
 
