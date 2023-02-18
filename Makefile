@@ -3,6 +3,8 @@ CFLAGS = -Wall -I include
 LDFLAGS = -L lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -mwindows -lws2_32
 SRC = src/
 OBJ = obj/
+INC = include/
+TETRIS = TETRIS/
 
 CFLAGS_SERVER = -Wall -Wextra -pedantic -std=c11
 LDFLAGS_SERVER = -lws2_32
@@ -30,11 +32,15 @@ jeu.o : $(SRC)jeu.c
 	$(CC) $(CFLAGS) -c $(SRC)jeu.c -o $(OBJ)jeu.o
 
 # Serveur
-server : server.o
-	$(CC) $(OBJ)server.o -o server $(LDFLAGS_SERVER)
 
-server.o : $(SRC)server.c
-	$(CC) $(CFLAGS_SERVER) -c $(SRC)server.c -o $(OBJ)server.o
+server: $(OBJ)serverFunctions.o $(OBJ)server.o
+	$(CC) -o server $(OBJ)serverFunctions.o $(OBJ)server.o $(LDFLAGS_SERVER)
+
+$(OBJ)serverFunctions.o: $(SRC)serverFunctions.c $(INC)$(TETRIS)serverFunctions.h
+	$(CC) -c $(SRC)serverFunctions.c -o $(OBJ)serverFunctions.o $(CFLAGS_SERVER)
+
+$(OBJ)server.o: $(SRC)server.c $(INC)$(TETRIS)serverFunctions.h
+	$(CC) -c $(SRC)server.c -o $(OBJ)server.o $(CFLAGS_SERVER)
 
 clean :
 	rm -rf *.o
