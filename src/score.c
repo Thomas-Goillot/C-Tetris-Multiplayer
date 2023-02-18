@@ -59,6 +59,13 @@ int main(int argc, char *argv[])
     TTF_Font *font = NULL;         // La police que nous allons utiliser
     SDL_Event event;               // Gestion des événements
     int running = 1;               // variable pour boucle principale
+    // Set the text color
+    SDL_Color color = {255, 255, 255, 255};
+    // Create a surface for the text
+    SDL_Surface *surface = NULL;
+
+    // Create a texture for the text
+    SDL_Texture *texture = NULL;
 
     // initialisation de la SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -97,17 +104,22 @@ int main(int argc, char *argv[])
         printf("Erreur de chargement de la police: %s\n", TTF_GetError());
         return 1;
     }
-
+    surface = SDL_LoadBMP("Image/Tetris-3d.bmp");
+    if (surface == NULL)
+    {
+        printf("Erreur de chargement de l'image: %s\n", SDL_GetError());
+        return 1;
+    }
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
     // Boucle principale
     while (running)
     {
 
         // Dessiner le menu
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_DestroyTexture(texture);
 
-        // Set the text color
-        SDL_Color color = {255, 255, 255, 255};
 
         char *text_array[] = {0};
             // Define the array of text to be displayed
@@ -121,17 +133,10 @@ int main(int argc, char *argv[])
             }
         }
 
-
-        // Create a surface for the text
-        SDL_Surface *surface = NULL;
-
-        // Create a texture for the text
-        SDL_Texture *texture = NULL;
-
         // Define the text position
         SDL_Rect Play;
         Play.x;
-        Play.y = 10;
+        Play.y =70;
 
         // Loop through the array of text and display each line
         for (int i = 0; i < 5; i++) {
@@ -186,7 +191,7 @@ int main(int argc, char *argv[])
         }
 
         Retour.x = (WINDOW_WIDTH - Retour.w) / 2;        // controls the rect's x coordinate
-        Retour.y = (WINDOW_HEIGHT - Retour.h) / 2 + 100; // controls the rect's y coordinte
+        Retour.y = (WINDOW_HEIGHT - Retour.h) / 2 + 200; // controls the rect's y coordinte
         SDL_RenderCopy(renderer, texture, NULL, &Retour);
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
