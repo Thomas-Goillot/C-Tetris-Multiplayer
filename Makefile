@@ -43,5 +43,5 @@ $(OBJ)server.o: $(SRC)server.c $(INC)$(TETRIS)serverFunctions.h
 	$(CC) -c $(SRC)server.c -o $(OBJ)server.o $(CFLAGS_SERVER)
 
 clean :
-	rm -rf *.o
+	rm -rf $(OBJ)*.o
 	rm -rf *.exe

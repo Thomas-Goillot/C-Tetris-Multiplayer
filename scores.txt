@@ -56,5 +56,6 @@ koi 22
 koi 22
 ko 22
 koi 22
+ue 22
 TOTO 10
-ue 22 0
+thomas 130 0

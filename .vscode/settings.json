@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "stdio.h": "c",
+        "serverfunctions.h": "c",
+        "sdl_ttf.h": "c",
+        "winsock2.h": "c",
+        "jeufunctions.h": "c",
+        "jeuconst.h": "c",
+        "sdl_render.h": "c",
+        "sdl_audio.h": "c",
+        "stdbool.h": "c",
+        "stdint.h": "c",
+        "sdl.h": "c",
+        "time.h": "c"
+    }
+}

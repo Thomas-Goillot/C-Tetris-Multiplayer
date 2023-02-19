@@ -1,82 +1,53 @@
+/*
+Client game for Tetris
+Author: Ibrahim OUBIHI / Thomas Goillot / Johua TANG TONG HI
+Date  : 18/02/2023
+*/
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_audio.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
 #include <stdio.h>
-#include <SDL2/SDL_ttf.h>
 #include <winsock2.h>
-//declaration des variables
-SDL_AudioSpec wavSpec;
-Uint32 wavLength;
-Uint8 *wavBuffer;
-
-//charger le fichier wav
-void LoadWav(char *filename){
-    SDL_LoadWAV(filename, &wavSpec, &wavBuffer, &wavLength);
-}
-
-//appeler le callback audio
-void CallbackAudio(void *userdata, Uint8 *stream, int streamLength){
-    if (wavLength == 0)
-        return;
-
-    Uint32 length = (Uint32)streamLength;
-    length = (length > wavLength ? wavLength : length);
-
-    SDL_memcpy (stream, wavBuffer, length);
-
-    wavBuffer += length;
-    wavLength -= length;
-}
-
-//initialisation audio
-void InitAudio(){
-    SDL_AudioSpec spec;
-    spec.freq = 44100;
-    spec.format = AUDIO_S16SYS;
-    spec.channels = 2;
-    spec.samples = 1024;
-    spec.callback = CallbackAudio;
-    spec.userdata = NULL;
-
-    SDL_OpenAudio(&spec, NULL);
-}
 
 const int8_t bi[4][4][2] =
-        {
-                {{-2, 0}, {1,  0}, {-2, -1}, {1,  2}},
-                {{-1, 0}, {2,  0}, {-1, 2},  {2,  -1}},
-                {{2,  0}, {-1, 0}, {2,  1},  {-1, -2}},
-                {{1,  0}, {-2, 0}, {1,  -2}, {-2, 1}}};
+    {
+        {{-2, 0}, {1, 0}, {-2, -1}, {1, 2}},
+        {{-1, 0}, {2, 0}, {-1, 2}, {2, -1}},
+        {{2, 0}, {-1, 0}, {2, 1}, {-1, -2}},
+        {{1, 0}, {-2, 0}, {1, -2}, {-2, 1}}};
 
 const int8_t br[4][4][2] =
-        {
-                {{-1, 0}, {-1, 1},  {0, -2}, {-1, -2}},
-                {{1,  0}, {1,  -1}, {0, 2},  {1,  2}},
-                {{1,  0}, {1,  1},  {0, -2}, {1,  -2}},
-                {{-1, 0}, {-1, -1}, {0, 2},  {-1, 2}}};
+    {
+        {{-1, 0}, {-1, 1}, {0, -2}, {-1, -2}},
+        {{1, 0}, {1, -1}, {0, 2}, {1, 2}},
+        {{1, 0}, {1, 1}, {0, -2}, {1, -2}},
+        {{-1, 0}, {-1, -1}, {0, 2}, {-1, 2}}};
 
 // initialisation de la taille du tableau en hauteur et largeur, ainsi que la taille de chaque cellules
 const uint8_t ri[4][4] =
-        {
-                {0, 3, 15, 12},
-                {1, 7, 14, 8},
-                {4, 2, 11, 13},
-                {5, 6, 10, 9}};
+    {
+        {0, 3, 15, 12},
+        {1, 7, 14, 8},
+        {4, 2, 11, 13},
+        {5, 6, 10, 9}};
 
 const uint8_t rr[2][4] =
-        {
-                {0, 2, 10, 8},
-                {1, 6, 9,  4}};
+    {
+        {0, 2, 10, 8},
+        {1, 6, 9, 4}};
 
 const uint8_t height = 40;
 const uint8_t width = 10;
 const uint8_t cellwidth = 20;
 
-enum TETROMINOS {
-    E, // vide
+enum TETROMINOS
+{
+    E,
     I,
     O,
     T,
@@ -87,70 +58,70 @@ enum TETROMINOS {
 };
 
 const SDL_Colour cmap[L + 1] =
-        {
-                {40,  40,  40,  255},
-                {0,   255, 255, 255},
-                {255, 255, 0,   255},
-                {255, 0,   255, 255},
-                {0,   255, 0,   255},
-                {255, 0,   0,   255},
-                {0,   0,   255, 255},
-                {255, 200, 0,   255}};
+    {
+        {40, 40, 40, 255},
+        {0, 255, 255, 255},
+        {255, 255, 0, 255},
+        {255, 0, 255, 255},
+        {0, 255, 0, 255},
+        {255, 0, 0, 255},
+        {0, 0, 255, 255},
+        {255, 200, 0, 255}};
 
 // initialisation des formes a l'aide de la fonction enum TETROMINOS et chaque lettre correspond a une forme
 
 const uint8_t starts[L][16] =
-        {
-                {E, E, E, E,
-                        I, I, I, I,
-                        E, E, E, E,
-                        E, E, E, E},
-                {E, O, O, E,
-                        E, O, O, E,
-                        E, E, E, E,
-                        E, E, E, E},
-                {E, T, E, E,
-                        T, T, T, E,
-                        E, E, E, E,
-                        E, E, E, E},
-                {E, S, S, E,
-                        S, S, E, E,
-                        E, E, E, E,
-                        E, E, E, E},
-                {Z, Z, E, E,
-                        E, Z, Z, E,
-                        E, E, E, E,
-                        E, E, E, E},
-                {J, E, E, E,
-                        J, J, J, E,
-                        E, E, E, E,
-                        E, E, E, E},
-                {E, E, L, E,
-                        L, L, L, E,
-                        E, E, E, E,
-                        E, E, E, E}};
+    {
+        {E, E, E, E,
+         I, I, I, I,
+         E, E, E, E,
+         E, E, E, E},
+        {E, O, O, E,
+         E, O, O, E,
+         E, E, E, E,
+         E, E, E, E},
+        {E, T, E, E,
+         T, T, T, E,
+         E, E, E, E,
+         E, E, E, E},
+        {E, S, S, E,
+         S, S, E, E,
+         E, E, E, E,
+         E, E, E, E},
+        {Z, Z, E, E,
+         E, Z, Z, E,
+         E, E, E, E,
+         E, E, E, E},
+        {J, E, E, E,
+         J, J, J, E,
+         E, E, E, E,
+         E, E, E, E},
+        {E, E, L, E,
+         L, L, L, E,
+         E, E, E, E,
+         E, E, E, E}};
 
-uint8_t field[400];
+uint8_t field[400]; // tableau de jeu
 
-int8_t x, y;
-uint8_t piecebox[16];
-uint8_t falltype;
-uint8_t rstate = 0;
-uint8_t droptimer = 0;
+int8_t x, y;           // position courante
+uint8_t piecebox[16];  // forme courante
+uint8_t falltype;      // type de chute
+uint8_t rstate = 0;    // rotation
+uint8_t droptimer = 0; // timer de chute
 
-// chargement des formes suivantes de manières aleatoires
+uint8_t formecur = 7; // forme courante
+uint8_t forme[7];     // forme suivante
 
-uint8_t formecur = 7;
-uint8_t forme[7];
+char *name;    // Nom du joueur
+int score = 0; // Score du joueur
 
-char* name;
-int score = 0; // affichage du score
-
-void nouvelle_forme() {
+void nouvelle_forme()
+{
     for (uint8_t i = 0; i < 7; i++)
         forme[i] = i + 1;
 
-    for (uint8_t i = 6; i > 0; i--) {
+    for (uint8_t i = 6; i > 0; i--)
+    {
         uint8_t t;
         uint8_t num = rand() % (i + 1);
 
@@ -162,9 +133,8 @@ void nouvelle_forme() {
     formecur = 0;
 }
 
-// apparition de la prochaine forme
-
-void spawn() {
+void spawn()
+{
     if (formecur >= 7)
         nouvelle_forme();
 
@@ -177,9 +147,11 @@ void spawn() {
     memcpy(piecebox, starts[falltype - 1], 16);
 }
 
-void place() {
+void place()
+{
     for (uint8_t i = 0; i < 4; i++)
-        for (uint8_t j = 0; j < 4; j++) {
+        for (uint8_t j = 0; j < 4; j++)
+        {
             if (y >= height - j)
                 continue;
             if (piecebox[i + 4 * j] == E)
@@ -189,9 +161,8 @@ void place() {
         }
 }
 
-// Verification fin de partie
-
-bool loss() {
+bool loss()
+{
     for (uint8_t i = 0; i < width; i++)
         if (field[i] != E)
             return true;
@@ -199,15 +170,16 @@ bool loss() {
     return false;
 }
 
-// Nettoyer la ligne en cas de ligne complete
-
-void clearline() {
+void clearline()
+{
     uint8_t l;
     uint8_t lines = 0;
 
-    for (l = 0; l < height; l++) {
+    for (l = 0; l < height; l++)
+    {
         bool line = true;
-        for (uint8_t i = 0; i < width; i++) {
+        for (uint8_t i = 0; i < width; i++)
+        {
             if (field[i + width * l] != E)
                 continue;
             line = false;
@@ -220,17 +192,22 @@ void clearline() {
             break;
     }
 
-    for (l; l > lines; l--) {
-        for (uint8_t i = 0; i < width; i++) {
+    for (l; l > lines; l--)
+    {
+        for (uint8_t i = 0; i < width; i++)
+        {
             field[i + (l - 1) * width] = field[i + (l - 1 - lines) * width];
         }
     }
     score++;
 }
 
-bool intersect(uint8_t temp[], int8_t xoff, int8_t yoff) {
+bool intersect(uint8_t temp[], int8_t xoff, int8_t yoff)
+
+{
     for (int8_t i = 0; i < 4; i++)
-        for (int8_t j = 0; j < 4; j++) {
+        for (int8_t j = 0; j < 4; j++)
+        {
             if (temp[i + 4 * j] == E)
                 continue;
             if (i + x + xoff < 0)
@@ -245,11 +222,14 @@ bool intersect(uint8_t temp[], int8_t xoff, int8_t yoff) {
     return false;
 }
 
-bool bottom() {
+bool bottom()
+{
     return intersect(piecebox, 0, 1);
 
-    for (uint8_t i = 0; i < 4; i++) {
-        for (uint8_t j = 0; j < 4; j++) {
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        for (uint8_t j = 0; j < 4; j++)
+        {
             if (piecebox[i + 4 * j] == E)
                 continue;
             if (j + y + 1 == height)
@@ -259,11 +239,12 @@ bool bottom() {
         }
         return false;
     }
-    // ----------------------------------------------------------------
 }
 
-void droptick() {
-    if (bottom()) {
+void droptick()
+{
+    if (bottom())
+    {
         if (droptimer++ < 4)
             return;
         droptimer = 0;
@@ -278,41 +259,44 @@ void droptick() {
     y++;
 }
 
+void rotater(uint8_t temp[])
+{
+    switch (falltype)
+    {
+    case I:
+        for (uint8_t i = 0; i < 4; i++)
+            for (uint8_t j = 0; j < 4; j++)
+                temp[ri[i][(j + 1) % 4]] = piecebox[ri[i][j]];
+        break;
+    default:
+        for (uint8_t i = 0; i < 2; i++)
+            for (uint8_t j = 0; j < 4; j++)
+                temp[rr[i][(j + 1) % 4]] = piecebox[rr[i][j]];
 
-void rotater(uint8_t temp[]) {
-    switch (falltype) {
-        case I:
-            for (uint8_t i = 0; i < 4; i++)
-                for (uint8_t j = 0; j < 4; j++)
-                    temp[ri[i][(j + 1) % 4]] = piecebox[ri[i][j]];
-            break;
-        default:
-            for (uint8_t i = 0; i < 2; i++)
-                for (uint8_t j = 0; j < 4; j++)
-                    temp[rr[i][(j + 1) % 4]] = piecebox[rr[i][j]];
-
-            temp[5] = piecebox[5];
+        temp[5] = piecebox[5];
     };
 }
 
-void rotatel(uint8_t temp[]) {
-    switch (falltype) {
-        case I:
-            for (uint8_t i = 0; i < 4; i++)
-                for (uint8_t j = 0; j < 4; j++)
-                    temp[ri[i][j]] = piecebox[ri[i][(j + 1) % 4]];
-            break;
-        default:
-            for (uint8_t i = 0; i < 2; i++)
-                for (uint8_t j = 0; j < 4; j++)
-                    temp[rr[i][j]] = piecebox[rr[i][(j + 1) % 4]];
+void rotatel(uint8_t temp[])
+{
+    switch (falltype)
+    {
+    case I:
+        for (uint8_t i = 0; i < 4; i++)
+            for (uint8_t j = 0; j < 4; j++)
+                temp[ri[i][j]] = piecebox[ri[i][(j + 1) % 4]];
+        break;
+    default:
+        for (uint8_t i = 0; i < 2; i++)
+            for (uint8_t j = 0; j < 4; j++)
+                temp[rr[i][j]] = piecebox[rr[i][(j + 1) % 4]];
 
-            temp[5] = piecebox[5];
+        temp[5] = piecebox[5];
     };
 }
 
-
-void rotate(bool right) {
+void rotate(bool right)
+{
     if (falltype == E || falltype == O)
         return;
     uint8_t temp[16];
@@ -331,11 +315,12 @@ void rotate(bool right) {
     int8_t *b;
 
     if (falltype == I)
-        b = (int8_t *) bi;
+        b = (int8_t *)bi;
     else
-        b = (int8_t *) br;
+        b = (int8_t *)br;
 
-    if (intersect(temp, 0, 0)) {
+    if (intersect(temp, 0, 0))
+    {
         while (intersect(temp, b[rindex * 8 + count * 2] * rdir, b[rindex * 8 + count * 2 + 1] * rdir) && count < 4)
             count++;
 
@@ -350,7 +335,8 @@ void rotate(bool right) {
     rstate = (rstate + rdir + 4) % 4;
 }
 
-void move(int8_t direction) {
+void move(int8_t direction)
+{
     if (intersect(piecebox, direction, 0))
         return;
 
@@ -413,7 +399,7 @@ char *sendDataToServer(char *name, int score)
     else
     {
         response[numBytes] = '\0';
-        //printf("Reponse recue : %s\n", response);
+        // printf("Reponse recue : %s\n", response);
     }
 
     // fermer la socket du client
@@ -424,6 +410,45 @@ char *sendDataToServer(char *name, int score)
 
     return response;
 }
+
+//declaration des variables
+SDL_AudioSpec wavSpec;
+Uint32 wavLength;
+Uint8 *wavBuffer;
+
+//charger le fichier wav
+void LoadWav(char *filename){
+    SDL_LoadWAV(filename, &wavSpec, &wavBuffer, &wavLength);
+}
+
+//appeler le callback audio
+void CallbackAudio(void *userdata, Uint8 *stream, int streamLength){
+    if (wavLength == 0)
+        return;
+
+    Uint32 length = (Uint32)streamLength;
+    length = (length > wavLength ? wavLength : length);
+
+    SDL_memcpy (stream, wavBuffer, length);
+
+    wavBuffer += length;
+    wavLength -= length;
+}
+
+//initialisation audio
+void InitAudio(){
+    SDL_AudioSpec spec;
+    spec.freq = 44100;
+    spec.format = AUDIO_S16SYS;
+    spec.channels = 2;
+    spec.samples = 1024;
+    spec.callback = CallbackAudio;
+    spec.userdata = NULL;
+
+    SDL_OpenAudio(&spec, NULL);
+}
+
+
 
 int main(int argc, char *argv[]) {
 
