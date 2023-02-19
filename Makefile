@@ -1,12 +1,12 @@
 CC = gcc
-CFLAGS = -Wall -I include
+CFLAGS = -I include
 LDFLAGS = -L lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -mwindows -lws2_32
 SRC = src/
 OBJ = obj/
 INC = include/
 TETRIS = TETRIS/
 
-CFLAGS_SERVER = -Wall -Wextra -pedantic -std=c11
+CFLAGS_SERVER = -Wextra -pedantic -std=c11
 LDFLAGS_SERVER = -lws2_32
 
 all: clean menu score jeu server
