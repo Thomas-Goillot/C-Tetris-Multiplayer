@@ -7,6 +7,43 @@
 #include <stdio.h>
 #include <SDL2/SDL_ttf.h>
 #include <winsock2.h>
+//declaration des variables
+SDL_AudioSpec wavSpec;
+Uint32 wavLength;
+Uint8 *wavBuffer;
+
+//charger le fichier wav
+void LoadWav(char *filename){
+    SDL_LoadWAV(filename, &wavSpec, &wavBuffer, &wavLength);
+}
+
+//appeler le callback audio
+void CallbackAudio(void *userdata, Uint8 *stream, int streamLength){
+    if (wavLength == 0)
+        return;
+
+    Uint32 length = (Uint32)streamLength;
+    length = (length > wavLength ? wavLength : length);
+
+    SDL_memcpy (stream, wavBuffer, length);
+
+    wavBuffer += length;
+    wavLength -= length;
+}
+
+//initialisation audio
+void InitAudio(){
+    SDL_AudioSpec spec;
+    spec.freq = 44100;
+    spec.format = AUDIO_S16SYS;
+    spec.channels = 2;
+    spec.samples = 1024;
+    spec.callback = CallbackAudio;
+    spec.userdata = NULL;
+
+    SDL_OpenAudio(&spec, NULL);
+}
+
 const int8_t bi[4][4][2] =
         {
                 {{-2, 0}, {1,  0}, {-2, -1}, {1,  2}},
@@ -412,6 +449,13 @@ int main(int argc, char *argv[]) {
     SDL_CreateWindowAndRenderer(cellwidth * width, cellwidth * height, 0, &win, &ren);
 
     spawn();
+    //charger le fichier wav
+    LoadWav("Tetris.wav");
+
+    //initialiser l'audio
+    InitAudio();
+    //lire la musique
+    SDL_PauseAudio(0);
     while (running) {
 
         while (SDL_PollEvent(&event)) {
@@ -524,7 +568,11 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+    //libérer le fichier wav
+    SDL_FreeWAV(wavBuffer);
 
+    //fermer l'audio
+    SDL_CloseAudio();
     SDL_DestroyWindow(win);
     SDL_DestroyRenderer(ren);
 

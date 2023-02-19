@@ -29,6 +29,7 @@ TODO :
 #define WINDOW_HEIGHT 600
 
 char* name;
+
 // ------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
@@ -97,9 +98,14 @@ int main(int argc, char *argv[])
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
+
+
+
+
     //Boucle principale
     while (running)
     {
+
         //Dessiner l'image
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_DestroyTexture(texture);
@@ -184,6 +190,7 @@ int main(int argc, char *argv[])
     }
 
     //Libérer les ressources
+
     TTF_CloseFont(font);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
