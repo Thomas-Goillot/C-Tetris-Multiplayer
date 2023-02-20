@@ -57,8 +57,8 @@ Not implemented yet. :(
 
 ## Authors / Contributors
 
-- [Joshua Tang Tong Hi](https://github.com/oxh3art)
-- [Ibrahim Oubihi](https://github.com/Rokmaa)
+- [Joshua Tang Tong Hi](https://github.com/Joshua-Tangtonghi)
+- [Ibrahim Oubihi](https://github.com/Ibrahim-Oubihi)
 - [Thomas Goillot](https://github.com/Thomas-Goillot)
 
 
