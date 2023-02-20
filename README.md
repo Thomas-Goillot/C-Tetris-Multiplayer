@@ -20,6 +20,7 @@
 ```bash
 git clone https://github.com/Thomas-Goillot/C-Tetris-Multiplayer
 cd C-Tetris-Multiplayer
+mkdir obj
 make
 ```
 
