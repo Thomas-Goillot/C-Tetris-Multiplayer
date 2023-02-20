@@ -64,11 +64,17 @@ Not implemented yet. :(
 
 ## Who done what ?
 
-- Thomas Goillot : Server, Game Logic, Game Graphics, menu
-- Joshua Tang Tong Hi : Game Logic, Game Graphics, menu
-- Ibrahim Oubihi : Server, Game Logic, Game Graphics
+
+![Who done what ?](https://github.com/Thomas-Goillot/C-Tetris-Multiplayer/blob/master/image/who_done_what.png?raw=true)
+
+
+- Thomas Goillot : Server, algorithm of the game
+- Joshua Tang Tong Hi : Game Graphics, menu
+- Ibrahim Oubihi : logics and algorithm of the game
 
 >Using git was use partially, so the commit history is not accurate and does not represent the real work done by each member of the team.
+
+
 
 
 
