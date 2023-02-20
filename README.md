@@ -48,10 +48,27 @@ Not implemented yet. :(
 - [SDL_render](https://wiki.libsdl.org/SDL_RenderCopy)
 - [winsock2](https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-start-page-2)
 
+## Issues
 
-## Authors
+- Logic of the game (Algorithm)
+- Server (Socket)
+- Menu (SDL2)
+- Issues using modulation compilation and SDL2 library (Still not working)
 
-- [Thomas Goillot](https://github.com/Thomas-Goillot)
+## Authors / Contributors
+
 - [Joshua Tang Tong Hi](https://github.com/oxh3art)
 - [Ibrahim Oubihi](https://github.com/Rokmaa)
+- [Thomas Goillot](https://github.com/Thomas-Goillot)
+
+
+## Who done what ?
+
+- Thomas Goillot : Server, Game Logic, Game Graphics, menu
+- Joshua Tang Tong Hi : Game Logic, Game Graphics, menu
+- Ibrahim Oubihi : Server, Game Logic, Game Graphics
+
+>Using git was use partially, so the commit history is not accurate and does not represent the real work done by each member of the team.
+
+
 
