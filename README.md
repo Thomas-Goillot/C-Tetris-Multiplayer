@@ -38,7 +38,7 @@ Not implemented yet. :(
 >In another terminal
 
 ```bash
-./client <yournameinthegame>
+./menu <yournameinthegame>
 ```
 
 ## Used libraries

@@ -13,7 +13,7 @@ all: clean menu score jeu server
 
 # Menu
 menu : menu.o
-	$(CC) $(OBJ)menu.o -o client $(LDFLAGS)
+	$(CC) $(OBJ)menu.o -o menu $(LDFLAGS)
 
 menu.o : $(SRC)menu.c
 	$(CC) $(CFLAGS) -c $(SRC)menu.c -o $(OBJ)menu.o
