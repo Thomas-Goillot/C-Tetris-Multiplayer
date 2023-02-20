@@ -13,12 +13,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3bc8f03e-c4f1-426e-892d-7f1c4f1f0fb3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Jeu.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Jeu.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Jeu.o" beforeDir="false" afterPath="$PROJECT_DIR$/Jeu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Menu.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Menu.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/menu.o" beforeDir="false" afterPath="$PROJECT_DIR$/menu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Jeu.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Jeu.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores.txt" beforeDir="false" afterPath="$PROJECT_DIR$/scores.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jeu.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/jeu.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/menu.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/menu.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -88,6 +84,7 @@
       <workItem from="1676585179857" duration="1775000" />
       <workItem from="1676642976449" duration="4281000" />
       <workItem from="1676647445280" duration="759000" />
+      <workItem from="1676733567483" duration="9199000" />
     </task>
     <servers />
   </component>

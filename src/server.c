@@ -2,59 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <winsock2.h>
-
+#include "../include/TETRIS/serverFunctions.h"
 #define MAX_PLAYERS 100
-
-typedef struct
-{
-    char name[50];
-    int score;
-} Player;
-
-void write_scores_to_file(const char *filename, Player players[], int numPlayers)
-{
-    FILE *fp = fopen(filename, "w");
-    if (fp == NULL)
-    {
-        printf("Erreur : impossible d'ouvrir le fichier %s\n", filename);
-        return;
-    }
-
-    for (int i = 0; i < numPlayers; i++)
-    {
-        fprintf(fp, "%s %d\n", players[i].name, players[i].score);
-    }
-
-    fclose(fp);
-}
-
-int read_scores_from_file(const char *filename, Player players[])
-{
-    FILE *fp = fopen(filename, "r");
-    if (fp == NULL)
-    {
-        printf("Le fichier %s n'existe pas, il sera créé.\n", filename);
-        return 0;
-    }
-
-    int i = 0;
-    while (fscanf(fp, "%s %d", players[i].name, &players[i].score) == 2)
-    {
-        i++;
-    }
-
-
-    fclose(fp);
-    return i;
-}
-
-int compare_players(const void *a, const void *b)
-{
-    const Player *playerA = (const Player *)a;
-    const Player *playerB = (const Player *)b;
-
-    return playerB->score - playerA->score;
-}
 
 int main()
 {
@@ -124,7 +73,7 @@ int main()
 
         // recevoir le nom et le score du joueur
         char playerName[50];
-        int playerScore;
+        int playerScore = 0;
         int bytesReceived = recv(clientSocket, playerName, sizeof(playerName), 0);
         if (bytesReceived == SOCKET_ERROR)
         {
@@ -154,14 +103,22 @@ int main()
         write_scores_to_file(filename, players, numPlayers);
 
         // renvoyer les 5 meilleurs scores au client
-        char scoresMessage[256] = "";
+        char scoresMessage[500] = "";
+
+        numPlayers = read_scores_from_file(filename, players);
+
+        //trier le tableau de joueurs par score décroissant
+        qsort(players, numPlayers, sizeof(Player), compare_players);
+
         for (int i = 0; i < 5 && i < numPlayers; i++)
         {
             char scoreLine[50];
-            sprintf(scoreLine, "%s %d\n", players[i].name, players[i].score);
+            sprintf(scoreLine, "%s-%d-", players[i].name, players[i].score);
             strncat(scoresMessage, scoreLine, sizeof(scoresMessage) - strlen(scoresMessage) - 1);
         }
+        scoresMessage[strlen(scoresMessage) - 1] = '\0';
 
+        //printf("%s", scoresMessage);
         if (send(clientSocket, scoresMessage, strlen(scoresMessage), 0) == SOCKET_ERROR)
         {
             printf("Erreur : impossible d'envoyer les scores au client\n");

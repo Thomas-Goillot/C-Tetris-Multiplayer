@@ -29,6 +29,7 @@ TODO :
 #define WINDOW_HEIGHT 600
 
 char* name;
+
 // ------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
@@ -45,6 +46,9 @@ int main(int argc, char *argv[])
     TTF_Font *font = NULL; //La police que nous allons utiliser
     SDL_Event event; //Gestion des événements
     int running = 1; //variable pour boucle principale
+    SDL_Surface *surface= NULL;
+    SDL_Texture *texture = NULL;
+    SDL_Color color = {255, 255, 255, 255};
 
     //initialisation de la SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -61,7 +65,7 @@ int main(int argc, char *argv[])
     }
 
     //création de la fenêtre
-    window = SDL_CreateWindow("Mon Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL)
     {
         printf("Erreur de création de la fenêtre: %s\n", SDL_GetError());
@@ -84,49 +88,57 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    //chargement de l'image
+    surface = SDL_LoadBMP("Image/Tetris-3d.bmp");
+    if (surface == NULL)
+    {
+        printf("Erreur de chargement de l'image: %s\n", SDL_GetError());
+        return 1;
+    }
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+
+
+
+
     //Boucle principale
     while (running)
     {
 
-
-        //Dessiner le menu
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
+        //Dessiner l'image
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_DestroyTexture(texture);
 
         //Dessiner le bouton jouer
-        SDL_Color color = {255, 255, 255, 255};
-        SDL_Surface *surface = TTF_RenderText_Solid(font, "Jouer", color);
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+       surface = TTF_RenderText_Solid(font, "Jouer", color);
+        texture = SDL_CreateTextureFromSurface(renderer,surface);
         SDL_Rect Play; //create a rect
-
         if (SDL_QueryTexture(texture, NULL, NULL, &Play.w, &Play.h) != 0)
         {
-            SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
-            printf("erreur texture");
+            printf("Erreur de chargement de la texture: %s\n",SDL_GetError());
+            return 1;
         }
-
         Play.x = (WINDOW_WIDTH - Play.w) / 2;  //controls the rect's x coordinate
         Play.y = (WINDOW_HEIGHT - Play.h) / 2; // controls the rect's y coordinte
-//        SDL_Rect rect = {300, 200, 200, 100};
+
         SDL_RenderCopy(renderer, texture, NULL, &Play);
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
 
         //Dessiner le bouton Quitter
-        surface = TTF_RenderText_Solid(font, "Quitter", color);
-        texture = SDL_CreateTextureFromSurface(renderer, surface);
+       surface = TTF_RenderText_Solid(font, "Quitter", color);
+        texture = SDL_CreateTextureFromSurface(renderer,surface);
         SDL_Rect Quitter; //create a rect
         if (SDL_QueryTexture(texture, NULL, NULL, &Quitter.w, &Quitter.h) != 0)
         {
-            SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
-            printf("erreur texture");
+            printf("Erreur de chargement de la texture: %s\n",SDL_GetError());
+            return 1;
         }
-
         Quitter.x = (WINDOW_WIDTH - Quitter.w) / 2;  //controls the rect's x coordinate
         Quitter.y = (WINDOW_HEIGHT -Quitter.h) / 2+100; // controls the rect's y coordinte
-        SDL_RenderCopy(renderer, texture, NULL, &Quitter);
+
+        SDL_RenderCopy(renderer,texture, NULL, &Quitter);
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
 
@@ -178,6 +190,7 @@ int main(int argc, char *argv[])
     }
 
     //Libérer les ressources
+
     TTF_CloseFont(font);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
